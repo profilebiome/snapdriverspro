@@ -39,6 +39,11 @@ solo desde GitHub y todos los datos se guardan en tu carpeta.
   punto de restauración.
 - **Inventario del equipo**: procesador, gráficos, memoria (módulo a módulo), almacenamiento, red, audio y
   batería, con sus versiones.
+- **Comprobar versión de verdad**: con un clic, la app descarga el paquete que Microsoft publica para ese
+  hardware ID, lee la versión del INF y la compara con la instalada. Queda cacheada una semana y los escaneos
+  posteriores comparan solos.
+- **Descargar e instalar sin pasar por la web**: el botón principal del detalle baja el paquete del catálogo,
+  lo extrae e instala; los enlaces al fabricante siguen ahí como alternativa.
 - **Resolver los «Revisar»**: cuando ya comprobaste un controlador en la web del fabricante, **Marcar al día**
   (por fila o en lote) lo cierra para esa versión exacta y se guarda en `verificados.json`. Si la versión
   cambia, el aviso vuelve.
@@ -94,8 +99,8 @@ de instalar el driver de audio genérico en un portátil y perder altavoces, mic
 | --- | --- | --- |
 | **Actualizar** | Windows Update ofrece un paquete para ese hardware ID, o el catálogo local tiene una versión mayor que la instalada | `windows-update` / `catalog` |
 | **Con error** | El dispositivo reporta un código de problema (28 = falta el controlador) | PnP |
-| **Revisar** | Controlador de terceros con más de *N* meses (24 por defecto) y sin versión de referencia | `age` |
-| **Al día** | Versión igual o mayor que la de referencia, o controlador incluido en Windows | `catalog` / — |
+| **Al día (sin referencia)** | Controlador de terceros antiguo sin paquete más nuevo en Windows Update; el detalle lo explica y **Comprobar versión** obtiene la referencia real | `age` |
+| **Al día** | Versión igual o mayor que la de referencia (catálogo, paquete del catálogo o verificación manual), o controlador incluido en Windows | `catalog` / `catalog-package` / `verified` |
 | **Sin datos** | No hay versión de referencia ni antigüedad suficiente para afirmar nada | — |
 
 Cada fila muestra el motivo textual, no solo un color.
@@ -202,7 +207,7 @@ npm run dist
 
 ## Si una actualización deja la app sin arrancar
 
-Una actualización interrumpida puede dejar `app.asar` a medio reemplazar. Desde la 2.1.0 la app no muestra el
+Una actualización interrumpida puede dejar `app.asar` a medio reemplazar. Desde la 2.3.0 la app no muestra el
 diálogo de error de JavaScript: registra el fallo en `Registros/arranque.log` y, si el archivo está dañado,
 muestra un aviso corto pidiendo reinstalar. El instalador se aplica ahora con la app cerrada
 (`quitAndInstall(true, true)`) para que el archivo no quede bloqueado. Antes de publicar, `npm run verify:build`
@@ -214,6 +219,16 @@ La versión instalada comprueba las releases del repositorio al arrancar y cada 
 nueva aparece una ventana con la nota de la release y el botón **Instalar actualización**: descarga el
 instalador, lo aplica y conserva ajustes, catálogo, descargas y registro. También se puede forzar desde
 **Ajustes → Buscar actualizaciones**.
+
+### Cómo se ve el aviso
+
+Al arrancar (y cada 6 horas) la app consulta las releases. Si hay una versión nueva:
+
+- Aparece una **píldora en la barra de título**: `● Actualización X.Y.Z`, con un punto que parpadea.
+- Se abre un diálogo con la versión, la nota de la release y los botones **Instalar actualización** /
+  **Más tarde**. «Más tarde» cierra el diálogo pero deja la píldora (al pulsarla vuelve a abrirse).
+- Durante la descarga la píldora muestra el porcentaje; al terminar, «Reiniciar para instalar».
+- El engranaje de ajustes muestra un punto mientras haya una actualización pendiente.
 
 ### Publicar una versión
 

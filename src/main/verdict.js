@@ -227,14 +227,40 @@ function verdictFor(driver, update, entry, options = {}) {
     };
   }
 
+  if (options.catalogReference && asString(options.catalogReference.version)) {
+    const reference = options.catalogReference;
+    if (compareVersions(driver.driverVersion, reference.version) < 0) {
+      return {
+        level: 'update',
+        source: 'catalog-package',
+        latestVersion: reference.version,
+        updateId: null,
+        reason: `El paquete más reciente del catálogo para este hardware es ${reference.version}${
+          reference.date ? ` (${formatDate(reference.date)})` : ''
+        } y este equipo tiene ${driver.driverVersion}.`,
+      };
+    }
+    return {
+      level: 'current',
+      source: 'catalog-package',
+      latestVersion: reference.version,
+      updateId: null,
+      reason: `Última versión publicada en el catálogo: ${reference.version}${
+        reference.date ? ` (${formatDate(reference.date)})` : ''
+      }. La instalada es igual o posterior.`,
+    };
+  }
+
   const age = monthsSince(driver.driverDate, now);
   if (age !== null && age >= threshold) {
     return {
-      level: 'review',
+      level: 'current',
       source: 'age',
       latestVersion: null,
       updateId: null,
-      reason: `Controlador de ${formatDate(driver.driverDate)} (${age} meses). Sin referencia de versión: conviene comprobarlo en la web del fabricante.`,
+      reason: `Windows Update no ofrece nada más nuevo para este controlador (${formatDate(
+        driver.driverDate,
+      )}) y no hay una versión de referencia publicada.`,
     };
   }
 

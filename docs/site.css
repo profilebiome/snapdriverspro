@@ -98,6 +98,7 @@ h1, h2, h3 { font-family: var(--display); letter-spacing: -0.022em; }
 }
 
 .btn--nav {
+  margin-left: auto;
   height: 34px;
   padding: 0 15px;
   border-radius: 12px;
@@ -547,3 +548,208 @@ h1, h2, h3 { font-family: var(--display); letter-spacing: -0.022em; }
   .closing { flex-direction: column; align-items: stretch; text-align: center; }
   .closing .btn--download { width: 100%; }
 }
+
+/* ───────────────────────── modern effects ───────────────────────── */
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  z-index: 60;
+  background: linear-gradient(90deg, var(--accent), #8fb4ff);
+  box-shadow: 0 0 12px rgba(46, 230, 200, 0.6);
+  transition: width 80ms linear;
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* animated mesh in the hero glow */
+.glow--top {
+  animation: meshShift 18s ease-in-out infinite alternate;
+}
+
+@keyframes meshShift {
+  0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.9; }
+  100% { transform: translate3d(2%, 3%, 0) scale(1.08); opacity: 1; }
+}
+
+/* reveal on scroll */
+.reveal {
+  animation: riseIn 720ms cubic-bezier(0.22, 0.8, 0.3, 1) both;
+}
+
+.reveal:nth-of-type(2) { animation-delay: 70ms; }
+.reveal:nth-of-type(3) { animation-delay: 130ms; }
+.reveal:nth-of-type(4) { animation-delay: 190ms; }
+.reveal:nth-of-type(5) { animation-delay: 240ms; }
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
+}
+
+.reveal > .feature,
+.reveal .feature {
+  transition-delay: 0ms;
+}
+
+/* download card: animated gradient border + button shine */
+.card {
+  position: relative;
+  isolation: isolate;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 17px;
+  padding: 1px;
+  background: conic-gradient(from var(--angle, 0deg), rgba(46, 230, 200, 0.55), rgba(143, 180, 255, 0.25), rgba(46, 230, 200, 0.05), rgba(46, 230, 200, 0.55));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: spinBorder 9s linear infinite;
+  z-index: -1;
+  opacity: 0.85;
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes spinBorder {
+  to { --angle: 360deg; }
+}
+
+.btn--download {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn--download::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: skewX(-18deg);
+  transition: left 520ms ease;
+}
+
+.btn--download:hover::after {
+  left: 120%;
+}
+
+/* hero window glow + parallax */
+.hero__visual .window {
+  position: relative;
+  overflow: hidden;
+}
+
+.window__glow {
+  position: absolute;
+  inset: -20% 0 auto 0;
+  height: 70%;
+  background: radial-gradient(60% 60% at 50% 0%, rgba(46, 230, 200, 0.22), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero__visual .window img {
+  position: relative;
+  z-index: 1;
+  transition: transform 500ms cubic-bezier(0.22, 0.8, 0.3, 1);
+}
+
+.hero__visual:hover .window img {
+  transform: scale(1.012);
+}
+
+/* feature hover: gradient edge */
+.feature {
+  position: relative;
+  overflow: hidden;
+}
+
+.feature::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(160px 120px at var(--mx, 50%) var(--my, 0%), rgba(46, 230, 200, 0.1), transparent 70%);
+  opacity: 0;
+  transition: opacity 220ms ease;
+  pointer-events: none;
+}
+
+.feature:hover::after { opacity: 1; }
+
+.feature__icon {
+  transition: transform 220ms ease, color 220ms ease, background 220ms ease;
+}
+
+.feature:hover .feature__icon {
+  transform: translateY(-1px);
+  color: var(--accent);
+  background: rgba(46, 230, 200, 0.1);
+}
+
+/* gallery hover */
+.shot .window {
+  transition: transform 320ms cubic-bezier(0.22, 0.8, 0.3, 1), border-color 320ms ease;
+}
+
+.shot:hover .window {
+  transform: translateY(-3px);
+  border-color: #2b3d51;
+}
+
+/* logo tiles */
+.logos__tile img {
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.logos__tile:hover img {
+  opacity: 1;
+  transform: scale(1.04);
+}
+
+/* faq smooth open */
+.faq details {
+  transition: background 180ms ease, border-color 180ms ease;
+}
+
+.faq details[open] {
+  border-color: #26384b;
+  background: #101822;
+}
+
+.faq details p {
+  animation: faqIn 240ms ease both;
+}
+
+@keyframes faqIn {
+  from { opacity: 0; transform: translateY(-3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { animation: none; }
+  .glow--top, .card::before, .btn--download::after { animation: none; }
+  .hero__visual:hover .window img, .shot:hover .window, .logos__tile:hover img { transform: none; }
+}
+
+

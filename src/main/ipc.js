@@ -16,6 +16,8 @@ const downloads = require('./catalog-download');
 const logger = require('./logger');
 const installedStore = require('./installed');
 const verifiedStore = require('./verified');
+const versionProbe = require('./version-probe');
+const verdictLib = require('./verdict');
 const elevate = require('./elevate');
 const updater = require('./updater');
 
@@ -186,6 +188,7 @@ function register({ getWindow }) {
         const catalog = catalogStore.load();
         const installedRecords = installedStore.read().filter((entry) => installedStore.isFresh(entry));
         const verifiedRecords = verifiedStore.read();
+        const references = versionProbe.readCache();
         const partialRows = scan.buildRows({
           system: systemResult.system,
           drivers: systemResult.drivers,
@@ -195,6 +198,7 @@ function register({ getWindow }) {
           settings,
           installedRecords,
           verifiedRecords,
+          references,
         });
         session.rows = partialRows;
         session.system = systemResult.system;
@@ -227,6 +231,7 @@ function register({ getWindow }) {
           settings,
           installedRecords,
           verifiedRecords,
+          references,
         });
         const stats = scan.summarize(rows, {
           updatesAvailable: updateResult.available,
@@ -275,6 +280,24 @@ function register({ getWindow }) {
     session.scanning = false;
     powershell.killAll();
     return { cancelled: true };
+  });
+
+  handle('verdict:probe', async (_event, { rowKey } = {}) => {
+    const row = rowsByKey(rowKey)[0];
+    if (!row) throw new Error('Ese controlador ya no está en la lista. Vuelve a escanear.');
+    const result = await versionProbe.probe(row);
+    if (!result.found) {
+      logger.log('warn', 'catalog', `Sin versión de referencia para ${row.deviceName}: ${result.reason || 'desconocido'}`);
+      return { found: false, reason: result.reason || 'No se pudo obtener la versión de referencia.', skipped: Boolean(result.skipped) };
+    }
+    const settings = settingsStore.load();
+    row.verdict = verdictLib.verdictFor(row, null, null, {
+      ageThresholdMonths: settings.ageThresholdMonths,
+      catalogReference: result,
+    });
+    session.stats = scan.summarize(session.rows, { ...(session.stats || {}) });
+    persistScan();
+    return { found: true, reference: result, verdict: row.verdict };
   });
 
   handle('verdict:verify', async (_event, { rowKeys, verified = true } = {}) => {

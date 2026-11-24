@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" class="no-js">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,7 +20,9 @@
     />
   </head>
   <body>
+    <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
     <div class="glow glow--top" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
 
     <header class="nav">
       <a class="brand" href="#top">
@@ -32,13 +34,12 @@
         </span>
         <span>Snap Drivers <em>Pro</em></span>
       </a>
-      <span class="nav__version" id="navVersion">v2.0.2</span>
       <a class="btn btn--nav" href="#descargar">Descargar</a>
     </header>
 
     <main id="top">
       <!-- DESCARGA PRIMERO -->
-      <section class="download" id="descargar">
+      <section class="download reveal" id="descargar">
         <div class="download__copy">
           <span class="eyebrow">Descárgalo y pruébalo</span>
           <h1>Empieza en menos de un minuto</h1>
@@ -77,7 +78,7 @@
       </section>
 
       <!-- HERO -->
-      <section class="hero">
+      <section class="hero reveal">
         <div class="hero__copy">
           <h2>Los drivers de tu PC, <span class="grad">al día y desde la fuente oficial</span></h2>
           <p class="hero__lead">
@@ -87,13 +88,14 @@
         </div>
         <div class="hero__visual">
           <div class="window">
-            <img src="shots/results.png" width="1366" height="728" alt="Snap Drivers Pro mostrando la auditoría de controladores" />
+            <div class="window__glow" aria-hidden="true"></div>
+            <img src="shots/results.png" width="1366" height="728" alt="Snap Drivers Pro mostrando la auditoría de controladores" data-parallax="0.06" />
           </div>
         </div>
       </section>
 
       <!-- LOGOS -->
-      <section class="logos" aria-label="Fabricantes compatibles">
+      <section class="logos reveal" aria-label="Fabricantes compatibles">
         <p class="logos__label">Compatible con equipos y componentes de</p>
         <div class="logos__grid">
           <span class="logos__tile"><img src="logos/intel.svg" alt="Intel" loading="lazy" /></span>
@@ -117,7 +119,7 @@
       </section>
 
       <!-- FUNCIONES -->
-      <section class="section" id="funciones">
+      <section class="section reveal" id="funciones">
         <span class="eyebrow">Qué hace</span>
         <h2>Un actualizador honesto, no una tienda de drivers</h2>
         <p class="lead">
@@ -172,7 +174,7 @@
       </section>
 
       <!-- GALERÍA -->
-      <section class="section section--shots" id="capturas">
+      <section class="section section--shots reveal" id="capturas">
         <span class="eyebrow">Así se ve</span>
         <h2>Todo en una ventana</h2>
 
@@ -199,7 +201,7 @@
       </section>
 
       <!-- CÓMO FUNCIONA -->
-      <section class="section section--steps">
+      <section class="section section--steps reveal">
         <span class="eyebrow">Cómo funciona</span>
         <h2>Tres pasos y reiniciar si hace falta</h2>
         <ol class="steps">
@@ -219,7 +221,7 @@
       </section>
 
       <!-- FAQ -->
-      <section class="section faq" id="preguntas">
+      <section class="section faq reveal" id="preguntas">
         <span class="eyebrow">Preguntas</span>
         <h2>Lo que suele preguntarse</h2>
         <div class="faq__grid">
@@ -250,7 +252,7 @@
         </div>
       </section>
 
-      <section class="closing">
+      <section class="closing reveal">
         <p>¿Listo para tener los drivers al día?</p>
         <a class="btn btn--primary btn--download" href="https://github.com/profilebiome/snapdriverspro/releases/latest/download/Snap-Drivers-Pro-Setup.exe">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 20h16" /></svg>
@@ -260,6 +262,47 @@
     </main>
 
     <script>
+      document.documentElement.classList.remove('no-js');
+
+      (function () {
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        var bar = document.getElementById('scrollProgress');
+        function paintBar() {
+          var doc = document.documentElement;
+          var max = doc.scrollHeight - doc.clientHeight;
+          bar.style.width = max > 0 ? ((doc.scrollTop / max) * 100).toFixed(2) + '%' : '0%';
+        }
+        document.addEventListener('scroll', paintBar, { passive: true });
+        paintBar();
+
+        var parallax = document.querySelector('[data-parallax]');
+        if (parallax && !reduce) {
+          var frame = 0;
+          var move = function () {
+            frame = 0;
+            var offset = Math.min(window.scrollY, 700) * parseFloat(parallax.dataset.parallax || '0');
+            parallax.style.transform = 'translate3d(0, ' + offset + 'px, 0) scale(1.015)';
+          };
+          document.addEventListener(
+            'scroll',
+            function () {
+              if (!frame) frame = requestAnimationFrame(move);
+            },
+            { passive: true },
+          );
+          move();
+        }
+
+        document.querySelectorAll('.feature').forEach(function (card) {
+          card.addEventListener('pointermove', function (event) {
+            var rect = card.getBoundingClientRect();
+            card.style.setProperty('--mx', ((event.clientX - rect.left) / rect.width) * 100 + '%');
+            card.style.setProperty('--my', ((event.clientY - rect.top) / rect.height) * 100 + '%');
+          });
+        });
+      })();
+
       (function () {
         var RELEASE = 'https://api.github.com/repos/profilebiome/snapdriverspro/releases/latest';
         fetch(RELEASE, { headers: { Accept: 'application/vnd.github+json' } })
@@ -276,8 +319,6 @@
 
             var card = document.getElementById('cardVersion');
             if (card) card.textContent = version;
-            var nav = document.getElementById('navVersion');
-            if (nav) nav.textContent = 'v' + version;
             if (size) {
               var sizeNode = document.getElementById('cardSize');
               if (sizeNode) sizeNode.textContent = size;

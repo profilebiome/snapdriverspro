@@ -56,9 +56,9 @@ const isScreenshotMode = Boolean(SHOT_DIR) && !app.isPackaged;
 
 // Screenshot runs get their own profile so they never collide with the copy the
 // user has open (which owns the single-instance lock and the profile cache).
-if (isScreenshotMode) {
+if (isScreenshotMode || (!app.isPackaged && process.env.DUP_DEV_PROFILE)) {
   try {
-    app.setPath('userData', path.join(os.tmpdir(), 'drivers-update-pro-shots'));
+    app.setPath('userData', path.join(os.tmpdir(), process.env.DUP_DEV_PROFILE || 'drivers-update-pro-shots'));
   } catch {
     /* se queda el perfil por defecto */
   }
@@ -227,11 +227,8 @@ async function runScreenshots(win) {
   await win.webContents.executeJavaScript("document.querySelector('#logsClose').click()", true);
   await wait(300);
 
-  await win.webContents.executeJavaScript("document.querySelector('#levelChips .chip[data-level=review]').click()", true);
+  await win.webContents.executeJavaScript("document.querySelector('#levelChips .chip[data-level=current]').click()", true);
   await wait(600);
-  await win.webContents.executeJavaScript("document.querySelector('#verifyBtn').click()", true);
-  await wait(1200);
-  await capture(win, '15-verificados.png');
 
   await win.webContents.executeJavaScript('window.__dupShots.openInstall()', true);
   await wait(600);
@@ -252,9 +249,28 @@ app.whenReady().then(() => {
 
   const updater = require('./updater');
   updater.init({ getWindow: () => mainWindow });
-  if (app.isPackaged) {
+  if (app.isPackaged || process.env.DUP_UPDATE_FEED) {
     setTimeout(() => updater.check(), 6000);
     setInterval(() => updater.check(), 6 * 60 * 60 * 1000).unref();
+  }
+
+  // Development only: capture the update indicator for visual review, then quit.
+  if (!app.isPackaged && process.env.DUP_UPDATE_SHOT) {
+    setTimeout(async () => {
+      try {
+        const fs = require('node:fs');
+        const first = await mainWindow.webContents.capturePage();
+        fs.writeFileSync(process.env.DUP_UPDATE_SHOT, first.toPNG());
+        await mainWindow.webContents.executeJavaScript("document.querySelector('#updateLater').click()", true);
+        await new Promise((resolve) => setTimeout(resolve, 700));
+        const second = await mainWindow.webContents.capturePage();
+        fs.writeFileSync(process.env.DUP_UPDATE_SHOT.replace(/.png$/, '-pill.png'), second.toPNG());
+        console.log('[update-shot]', process.env.DUP_UPDATE_SHOT);
+      } catch (error) {
+        console.error('[update-shot]', error.message);
+      }
+      app.exit(0);
+    }, 11000);
   }
 
   app.on('activate', () => {

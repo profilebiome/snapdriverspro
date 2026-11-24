@@ -102,14 +102,29 @@ test('Microsoft inbox drivers are never flagged by age', () => {
   assert.match(result.reason, /incluido en Windows/);
 });
 
-test('old third-party drivers without reference land on review', () => {
+test('old third-party drivers without reference are up to date, with a clear reason', () => {
   const result = v.verdictFor(driver(), null, null, {
     ageThresholdMonths: 24,
     now: new Date('2026-01-01T00:00:00Z'),
   });
-  assert.equal(result.level, 'review');
+  assert.equal(result.level, 'current');
   assert.equal(result.source, 'age');
-  assert.match(result.reason, /comprobarlo en la web del fabricante/);
+  assert.match(result.reason, /no ofrece nada más nuevo|no hay una versión de referencia/);
+});
+
+test('a catalog package reference decides between update and current', () => {
+  const older = v.verdictFor(driver({ driverVersion: '10.0.0.1' }), null, null, {
+    catalogReference: { version: '11.0.0.1', date: '2024-05-01' },
+  });
+  assert.equal(older.level, 'update');
+  assert.equal(older.source, 'catalog-package');
+  assert.match(older.reason, /11.0.0.1/);
+
+  const same = v.verdictFor(driver({ driverVersion: '11.0.0.1' }), null, null, {
+    catalogReference: { version: '11.0.0.1', date: '2024-05-01' },
+  });
+  assert.equal(same.level, 'current');
+  assert.equal(same.source, 'catalog-package');
 });
 
 test('recent drivers with no reference stay unknown instead of claiming they are current', () => {

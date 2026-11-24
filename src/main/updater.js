@@ -36,6 +36,13 @@ function init({ getWindow }) {
   autoUpdater.autoInstallOnAppQuit = true;
   autoUpdater.allowDowngrade = false;
 
+  // Development only: point the updater at a local latest.yml to exercise the
+  // visual flow. Packaged builds always use the configured GitHub provider.
+  if (!app.isPackaged && process.env.DUP_UPDATE_FEED) {
+    autoUpdater.forceDevUpdateConfig = true;
+    autoUpdater.setFeedURL({ provider: 'generic', url: process.env.DUP_UPDATE_FEED });
+  }
+
   const send = (payload) => {
     const win = getMainWindow();
     if (win && !win.isDestroyed()) win.webContents.send('update:event', payload);
@@ -78,7 +85,7 @@ function init({ getWindow }) {
 }
 
 function isSupported() {
-  return app.isPackaged;
+  return app.isPackaged || (!app.isPackaged && Boolean(process.env.DUP_UPDATE_FEED));
 }
 
 async function check() {

@@ -75,7 +75,7 @@ const state = {
   batch: { open: false, items: [], phase: 'idle', jobs: new Map(), installed: 0, failed: 0 },
   logs: { open: false, level: 'all', entries: [], counts: {} },
   admin: false,
-  update: { status: 'idle', version: '', notes: '', percent: 0, message: '', supported: false },
+  update: { status: 'idle', version: '', notes: '', percent: 0, message: '', supported: false, notifiedVersion: null },
   catalogDraft: null,
   pendingScan: [],
 };
@@ -256,7 +256,6 @@ function renderReadout() {
     $('#' + id).textContent = value === null || value === undefined ? '—' : nf.format(value);
   };
   set('statUpdates', state.rows.length ? counts.update : undefined);
-  set('statReview', state.rows.length ? counts.review : undefined);
   set('statErrors', state.rows.length ? counts.error : undefined);
   set('statCurrent', state.rows.length ? counts.current : undefined);
   set('statUnknown', state.rows.length ? counts.unknown : undefined);
@@ -696,11 +695,11 @@ function renderDrawer() {
 
   const primaryRoute = routes[0] || null;
   const canVerify = row.verdict.level === 'review' || row.verdict.level === 'unknown';
+  const canProbe = row.verdict.source !== 'catalog-package';
   $('#drawerFoot').innerHTML = `
-    ${canVerify ? `<button class="btn btn--quiet" data-action="verify" data-key="${escapeHtml(row.key)}">${icon('check')} Marcar al día</button>` : ''}
-    <button class="btn btn--quiet" data-action="install-package">${icon('install')} Instalar paquete</button>
-    <button class="btn btn--primary" data-action="open-route" data-route="${primaryRoute ? primaryRoute.id : 'catalog'}" data-key="${escapeHtml(row.key)}" ${primaryRoute ? '' : 'disabled'} title="${primaryRoute ? escapeHtml(primaryRoute.label) : 'Sin enlace'}">
-      ${icon('external')} Descarga oficial${primaryRoute ? ` · ${escapeHtml(primaryRoute.id === 'oem' ? 'equipo' : primaryRoute.id === 'chip' ? 'componente' : 'Microsoft')}` : ''}
+    ${canProbe ? `<button class="btn btn--quiet" data-action="probe" data-key="${escapeHtml(row.key)}">${icon('search')} Comprobar versión</button>` : ''}
+    <button class="btn btn--primary" data-action="open-download" data-key="${escapeHtml(row.key)}">
+      ${icon('download')} Descargar e instalar
     </button>`;
 }
 
@@ -1186,6 +1185,21 @@ function onDownloadEvent(event) {
 
 /* ───────────────────────────── updates ───────────────────────────── */
 
+function renderUpdatePill() {
+  const update = state.update;
+  const pill = $('#updatePill');
+  const badge = $('#settingsBadge');
+  if (!pill) return;
+  let text = '';
+  if (update.status === 'available') text = `Actualización ${update.version || 'disponible'}`;
+  else if (update.status === 'downloading') text = `Descargando ${update.percent || 0}%`;
+  else if (update.status === 'downloaded') text = 'Reiniciar para instalar';
+  const show = Boolean(text);
+  pill.hidden = !show;
+  if (show) $('#updatePillText').textContent = text;
+  if (badge) badge.hidden = !show;
+}
+
 function readUpdate(payload) {
   const update = state.update;
   if (!payload || !payload.status) return;
@@ -1194,11 +1208,16 @@ function readUpdate(payload) {
   if (typeof payload.notes === 'string') update.notes = payload.notes;
   if (typeof payload.percent === 'number') update.percent = payload.percent;
   if (payload.message) update.message = payload.message;
+  renderUpdatePill();
   if (payload.status === 'available') {
     renderUpdate();
-    openModal('#updateModal');
+    if (update.notifiedVersion !== update.version) {
+      update.notifiedVersion = update.version;
+      openModal('#updateModal');
+    }
     return;
   }
+  if (['downloading', 'downloaded', 'error', 'latest'].includes(payload.status)) renderUpdatePill();
   if (['downloading', 'downloaded', 'error'].includes(payload.status)) {
     if ($('#updateModal').classList.contains('is-open')) renderUpdate();
     return;
@@ -1924,6 +1943,10 @@ function bindEvents() {
 
   $('#updateClose').addEventListener('click', () => closeModal('#updateModal'));
   $('#updateLater').addEventListener('click', () => closeModal('#updateModal'));
+  $('#updatePill').addEventListener('click', () => {
+    renderUpdate();
+    openModal('#updateModal');
+  });
   $('#updatePrimary').addEventListener('click', () => {
     if (state.update.status === 'available') {
       state.update.status = 'downloading';
@@ -1985,6 +2008,30 @@ function setLevel(level) {
   renderRows();
 }
 
+async function probeVersion(key) {
+  const row = state.rows.find((candidate) => candidate.key === key);
+  if (!row) return;
+  toast('Consultando la última versión publicada en el catálogo…', 'warn', 3000);
+  const result = await callApi(api.probeVersion, key).catch(() => null);
+  if (!result) return;
+  if (!result.found) {
+    toast(result.reason || 'No se pudo comprobar la versión.', 'warn', 7000);
+    return;
+  }
+  row.verdict = result.verdict;
+  renderAll();
+  if (state.drawerKey === key) renderDrawer();
+  const reference = result.reference;
+  toast(
+    row.verdict.level === 'update'
+      ? `Hay una versión más nueva: ${reference.version} (${formatDate(reference.date)}).`
+      : `Última versión publicada: ${reference.version} (${formatDate(reference.date)}). Estás al día.`,
+    row.verdict.level === 'update' ? 'warn' : 'ok',
+    8000,
+  );
+  guard(loadLogs());
+}
+
 async function markVerified(keys) {
   const list = (Array.isArray(keys) ? keys : [keys]).filter(Boolean);
   if (list.length === 0) return;
@@ -2017,6 +2064,10 @@ function handleRowAction(action, key, route) {
   }
   if (action === 'verify') {
     guard(markVerified([key]));
+    return;
+  }
+  if (action === 'probe') {
+    guard(probeVersion(key));
     return;
   }
   const legacy = { 'open-vendor': 'chip', 'open-oem': 'oem', 'open-wu': 'wu', 'open-catalog': 'catalog', catalog: 'catalog' };

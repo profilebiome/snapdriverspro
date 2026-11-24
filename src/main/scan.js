@@ -98,11 +98,21 @@ function findVerifiedRecord(driver, records) {
   return null;
 }
 
-function buildRow(driver, update, entry, system, settings, installedRecords = [], verifiedRecords = []) {
+function findCatalogReference(driver, references) {
+  const ids = (driver.hardwareIds || []).map((id) => String(id).toLowerCase());
+  for (const id of ids) {
+    const reference = references && references[id];
+    if (reference && reference.version) return reference;
+  }
+  return null;
+}
+
+function buildRow(driver, update, entry, system, settings, installedRecords = [], verifiedRecords = [], references = {}) {
   const result = verdict.verdictFor(driver, update, entry, {
     ageThresholdMonths: settings.ageThresholdMonths,
     installedRecord: update ? null : findInstalledRecord(driver, installedRecords),
     verifiedRecord: update ? null : findVerifiedRecord(driver, verifiedRecords),
+    catalogReference: update ? null : findCatalogReference(driver, references),
   });
   return {
     ...driver,
@@ -132,7 +142,7 @@ function buildRow(driver, update, entry, system, settings, installedRecords = []
 }
 
 /** Joins drivers + problems + Windows Update results into one row set. */
-function buildRows({ system, drivers, problems, updates, catalogEntries, settings, installedRecords = [], verifiedRecords = [] }) {
+function buildRows({ system, drivers, problems, updates, catalogEntries, settings, installedRecords = [], verifiedRecords = [], references = {} }) {
   const entries = verdict.toArray(catalogEntries);
   const allUpdates = verdict.toArray(updates);
   const rows = [];
@@ -142,7 +152,7 @@ function buildRows({ system, drivers, problems, updates, catalogEntries, setting
     const update = verdict.findMatchingUpdate(driver, allUpdates);
     if (update && update.updateId) usedUpdateIds.add(update.updateId);
     const entry = catalogStore.matchEntry(driver, entries);
-    rows.push(buildRow(driver, update, entry, system, settings, installedRecords, verifiedRecords));
+    rows.push(buildRow(driver, update, entry, system, settings, installedRecords, verifiedRecords, references));
   }
 
   for (const problem of verdict.toArray(problems)) {
@@ -152,7 +162,7 @@ function buildRows({ system, drivers, problems, updates, catalogEntries, setting
     if (alreadyKnown) continue;
     const update = verdict.findMatchingUpdate(problem, allUpdates);
     if (update && update.updateId) usedUpdateIds.add(update.updateId);
-    const row = buildRow(problem, update, null, system, settings, installedRecords, verifiedRecords);
+    const row = buildRow(problem, update, null, system, settings, installedRecords, verifiedRecords, references);
     if (!update) {
       row.verdict = {
         level: 'error',
@@ -189,7 +199,7 @@ function buildRows({ system, drivers, problems, updates, catalogEntries, setting
       missingDriver: true,
       orphanUpdate: true,
     };
-    rows.push(buildRow(synthetic, update, null, system, settings, installedRecords, verifiedRecords));
+    rows.push(buildRow(synthetic, update, null, system, settings, installedRecords, verifiedRecords, references));
   }
 
   rows.sort((a, b) => {

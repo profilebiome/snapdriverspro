@@ -319,7 +319,7 @@ function downloadsDir() {
  */
 function downloadFile(
   rawUrl,
-  { label = 'paquete', onProgress = () => {}, jobId = '', signal = null } = {},
+  { label = 'paquete', onProgress = () => {}, jobId = '', signal = null, maxBytes = MAX_BYTES } = {},
   redirects = 0,
 ) {
   if (!isDownloadUrl(rawUrl)) return Promise.reject(new Error('URL de descarga no permitida.'));
@@ -362,7 +362,7 @@ function downloadFile(
             finish(reject, new Error('Demasiadas redirecciones al descargar el paquete.'));
             return;
           }
-          downloadFile(new URL(res.headers.location, url).toString(), { label, onProgress, jobId, signal }, redirects + 1).then(
+          downloadFile(new URL(res.headers.location, url).toString(), { label, onProgress, jobId, signal, maxBytes }, redirects + 1).then(
             (value) => finish(resolve, value),
             (error) => finish(reject, error),
           );
@@ -374,9 +374,9 @@ function downloadFile(
           return;
         }
         const total = Number(res.headers['content-length']) || 0;
-        if (total > MAX_BYTES) {
+        if (total > maxBytes) {
           res.destroy();
-          finish(reject, new Error('El paquete supera el tamaño máximo admitido (900 MB).'));
+          finish(reject, new Error(`El paquete supera el tamaño máximo admitido (${Math.round(maxBytes / (1024 * 1024))} MB).`));
           return;
         }
         const out = fs.createWriteStream(partial);
@@ -384,11 +384,11 @@ function downloadFile(
         let last = 0;
         res.on('data', (chunk) => {
           received += chunk.length;
-          if (received > MAX_BYTES) {
+          if (received > maxBytes) {
             res.destroy();
             out.destroy();
             cleanupPartial();
-            finish(reject, new Error('El paquete supera el tamaño máximo admitido (900 MB).'));
+            finish(reject, new Error(`El paquete supera el tamaño máximo admitido (${Math.round(maxBytes / (1024 * 1024))} MB).`));
             return;
           }
           const now = Date.now();
