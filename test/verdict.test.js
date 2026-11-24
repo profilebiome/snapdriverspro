@@ -62,7 +62,7 @@ test('a driver installed by the app is reported as up to date', () => {
   });
   assert.equal(result.level, 'current');
   assert.equal(result.source, 'install');
-  assert.match(result.reason, /Instalado por Drivers Update Pro/);
+  assert.match(result.reason, /Instalado por Snap Drivers Pro/);
 });
 
 test('a Windows Update match wins over catalog and age', () => {
