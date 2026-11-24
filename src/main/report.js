@@ -112,7 +112,7 @@ function buildHtml({ rows, stats, system, catalog, generatedAt }) {
   </table>
   <footer>
     Fuente de veredictos: Windows Update, catálogo local (${catalog?.entries?.length || 0} entradas) y antigüedad del controlador.
-    Los enlaces abren las páginas oficiales del fabricante o el Catálogo de Microsoft Update. Sin telemetría.
+    Los enlaces abren las páginas oficiales del fabricante o el Catálogo de Microsoft Update.
   </footer>
 </body>
 </html>`;

@@ -548,7 +548,7 @@ function register({ getWindow }) {
       title: 'Snap Drivers Pro',
       message: `Snap Drivers Pro ${app.getVersion()}`,
       detail:
-        'Auditor portable de controladores. Sin telemetría: todo se queda en esta carpeta.\n\n' +
+        'Actualizador de controladores. Todo se guarda en esta carpeta.\n\n' +
         `Datos: ${paths.dataRoot()}\n\nFuentes: Windows Update, Catálogo de Microsoft Update y las webs oficiales de cada fabricante.`,
       buttons: ['Cerrar'],
     });

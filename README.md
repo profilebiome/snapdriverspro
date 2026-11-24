@@ -2,7 +2,7 @@
 
 Actualizador de controladores para Windows 10/11 x64. Escanea el equipo, dice qué controladores están
 desactualizados, descarga el paquete **oficial** de Microsoft y lo instala con un solo permiso. Se actualiza
-solo desde GitHub y no envía telemetría.
+solo desde GitHub y todos los datos se guardan en tu carpeta.
 
 ![Resultados del escaneo](docs/resultados.png)
 

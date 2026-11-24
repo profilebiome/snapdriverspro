@@ -48,4 +48,4 @@ if ($LASTEXITCODE -ne 0) { throw 'La subida falló.' }
 Write-Host "`n[5/5] Listo" -ForegroundColor Green
 gh release view $tag --json assets -q '.assets[] | .name + "  " + (.size|tostring)'
 Write-Host "Descarga directa: https://github.com/profilebiome/snapdriverspro/releases/latest/download/Snap-Drivers-Pro-Setup.exe"
-Write-Host "Web: https://profilebiome.github.io/snapdriverspro/"
+Write-Host "Web: https://snapdrivers.profilebio.me/"

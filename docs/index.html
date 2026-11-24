@@ -6,7 +6,7 @@
     <title>Snap Drivers Pro — Tus drivers al día, desde las fuentes oficiales</title>
     <meta
       name="description"
-      content="Snap Drivers Pro escanea los controladores de tu PC, detecta actualizaciones y las descarga desde el catálogo oficial de Microsoft. Un solo permiso, sin telemetría."
+      content="Snap Drivers Pro escanea los controladores de tu PC, detecta actualizaciones y las descarga desde el catálogo oficial de Microsoft. Un solo permiso."
     />
     <meta property="og:title" content="Snap Drivers Pro" />
     <meta property="og:description" content="Escanea, actualiza y audita los drivers de cualquier PC con descargas oficiales." />
@@ -48,7 +48,7 @@
               Ver el código
             </a>
           </div>
-          <p class="meta" id="downloadMeta">Versión 2.0.0 · ~116 MB · sin telemetría</p>
+          <p class="meta" id="downloadMeta">Versión 2.0.1 · ~116 MB</p>
         </div>
         <figure class="hero__shot">
           <img src="resultados.png" alt="Interfaz de Snap Drivers Pro con la lista de controladores y su estado" loading="eager" />
@@ -59,7 +59,7 @@
         <div><b>100+</b><span>fabricantes de componente</span></div>
         <div><b>29</b><span>fabricantes de equipo</span></div>
         <div><b>1</b><span>permiso para instalar todo</span></div>
-        <div><b>0</b><span>telemetría</span></div>
+        <div><b>116 MB</b><span>instalador completo</span></div>
       </section>
 
       <section id="funciones" class="section">
@@ -138,7 +138,7 @@
         </details>
         <details>
           <summary>¿Envía mis datos a algún sitio?</summary>
-          <p>No. La app no tiene servidor propio ni telemetría: todo se guarda en su carpeta junto al ejecutable (<code>settings.json</code>, <code>instalados.json</code>, <code>Registros/</code>).</p>
+          <p>No. La app no tiene servidor propio: todo se guarda en su carpeta junto al ejecutable (<code>settings.json</code>, <code>instalados.json</code>, <code>Registros/</code>).</p>
         </details>
         <details>
           <summary>¿Por qué pide permiso de administrador?</summary>
@@ -179,7 +179,7 @@
             var size = '';
             var asset = (release.assets || []).filter(function (item) { return /Setup.*\.exe$/i.test(item.name); })[0];
             if (asset && asset.size) size = ' · ~' + Math.round(asset.size / (1024 * 1024)) + ' MB';
-            var text = 'Versión ' + version + size + ' · sin telemetría';
+            var text = 'Versión ' + version + size;
             var a = document.getElementById('downloadMeta');
             var b = document.getElementById('downloadMeta2');
             if (a) a.textContent = text;
