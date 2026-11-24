@@ -197,6 +197,14 @@ export CSC_KEY_PASSWORD=tu-contraseña
 npm run dist
 ```
 
+## Si una actualización deja la app sin arrancar
+
+Una actualización interrumpida puede dejar `app.asar` a medio reemplazar. Desde la 2.0.3 la app no muestra el
+diálogo de error de JavaScript: registra el fallo en `Registros/arranque.log` y, si el archivo está dañado,
+muestra un aviso corto pidiendo reinstalar. El instalador se aplica ahora con la app cerrada
+(`quitAndInstall(true, true)`) para que el archivo no quede bloqueado. Antes de publicar, `npm run verify:build`
+comprueba que todos los JS del `asar` compilan y coinciden con el fuente.
+
 ## Actualizaciones automáticas
 
 La versión instalada comprueba las releases del repositorio al arrancar y cada 6 horas. Si hay una versión

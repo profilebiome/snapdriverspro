@@ -2,7 +2,47 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { app, BrowserWindow, Menu, nativeTheme, shell } = require('electron');
+const { app, BrowserWindow, Menu, nativeTheme, shell, dialog } = require('electron');
+
+/**
+ * A broken installation (for example a half-replaced app.asar after an update)
+ * throws while requiring a module. Electron would answer with its raw
+ * "A JavaScript error occurred in the main process" window; we log silently and
+ * show one short, actionable message instead.
+ */
+function safeLog(line) {
+  try {
+    const portable = process.env.PORTABLE_EXECUTABLE_DIR;
+    const base = portable
+      ? path.join(portable, 'SnapDriversPro')
+      : path.join(process.env.APPDATA || process.env.LOCALAPPDATA || process.cwd(), 'Snap Drivers Pro');
+    fs.mkdirSync(path.join(base, 'Registros'), { recursive: true });
+    fs.appendFileSync(path.join(base, 'Registros', 'arranque.log'), `${new Date().toISOString()} ${line}\n`, 'utf8');
+  } catch {
+    /* el registro es lo último que puede fallar */
+  }
+}
+
+let crashed = false;
+process.on('uncaughtException', (error) => {
+  if (crashed) return;
+  crashed = true;
+  safeLog(`uncaught: ${(error && error.stack) || error}`);
+  try {
+    dialog.showErrorBox(
+      'Snap Drivers Pro',
+      'No se pudo iniciar la aplicación.\n\nVuelve a instalar la última versión desde\nsnapdrivers.profilebio.me',
+    );
+  } catch {
+    /* sin interfaz disponible */
+  }
+  app.exit(1);
+});
+
+process.on('unhandledRejection', (reason) => {
+  safeLog(`rejection: ${(reason && reason.stack) || reason}`);
+});
+
 const ipc = require('./ipc');
 const paths = require('./paths');
 

@@ -103,7 +103,17 @@ async function download() {
 
 function install() {
   if (!isSupported()) throw new Error('Las actualizaciones solo funcionan en la versión instalada.');
-  setImmediate(() => autoUpdater.quitAndInstall(false, true));
+  // Close the windows first so the installer never fights a running process for
+  // app.asar; a locked file is what leaves a half-written install behind.
+  const win = getMainWindow();
+  try {
+    if (win && !win.isDestroyed()) win.destroy();
+  } catch {
+    /* seguimos igual */
+  }
+  setTimeout(() => {
+    autoUpdater.quitAndInstall(true, true);
+  }, 400);
   return { installing: true };
 }
 
