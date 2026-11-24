@@ -49,15 +49,19 @@ function init({ getWindow }) {
   };
 
   autoUpdater.on('checking-for-update', () => send({ status: 'checking' }));
-  autoUpdater.on('update-available', (info) =>
+  autoUpdater.on('update-available', (info) => {
+    logger.info('update', `Actualización disponible: ${info?.version}`);
     send({
       status: 'available',
       version: info?.version || '',
       releaseDate: info?.releaseDate || null,
       notes: notesToText(info?.releaseNotes),
-    }),
-  );
-  autoUpdater.on('update-not-available', () => send({ status: 'latest' }));
+    });
+  });
+  autoUpdater.on('update-not-available', () => {
+    logger.info('update', 'No hay versiones nuevas');
+    send({ status: 'latest' });
+  });
   autoUpdater.on('download-progress', (progress) =>
     send({
       status: 'downloading',
