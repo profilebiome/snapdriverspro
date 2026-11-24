@@ -7,6 +7,9 @@ $ErrorActionPreference = 'Stop'
 Set-Location (Split-Path -Parent $PSScriptRoot)
 
 $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+$tag = "v$version"
+$outDir = "dist-release"
+
 Write-Host "== Snap Drivers Pro $version ==" -ForegroundColor Cyan
 
 if (-not $SkipTests) {
@@ -17,23 +20,32 @@ if (-not $SkipTests) {
 
 Write-Host "`n[2/5] Commit y push" -ForegroundColor Yellow
 git add -A
-$pending = git status --porcelain
-if ($pending) {
-    git commit -m "release: v$version — $Note"
-}
+if (git status --porcelain) { git commit -m "release: $tag — $Note" }
 git push
 
-Write-Host "`n[3/5] Build + publicación en GitHub Releases" -ForegroundColor Yellow
+Write-Host "`n[3/5] Compilando el instalador" -ForegroundColor Yellow
+if (Test-Path $outDir) { Remove-Item $outDir -Recurse -Force }
+npx electron-builder --win nsis --x64 --config.directories.output=$outDir
+if ($LASTEXITCODE -ne 0) { throw 'La compilación falló.' }
 if (-not $env:GH_TOKEN) {
-    Write-Host 'Aviso: sin GH_TOKEN se usará el login de gh (gh auth login).' -ForegroundColor DarkYellow
+    $env:GH_TOKEN = (gh auth token)
 }
-npx electron-builder --win nsis --x64 --publish always
-if ($LASTEXITCODE -ne 0) { throw 'La publicación falló.' }
 
-Write-Host "`n[4/5] Comprobando la release" -ForegroundColor Yellow
-gh release view "v$version" --web
+Write-Host "`n[4/5] Creando la release y subiendo los archivos" -ForegroundColor Yellow
+# La publicación integrada de electron-builder puede cortarse con instaladores
+# grandes; subir con gh es más fiable y deja la release igual de válida.
+gh release create $tag --title "Snap Drivers Pro $version" --notes $Note 2>$null
+if ($LASTEXITCODE -ne 0) {
+    gh release edit $tag --notes $Note
+}
+gh release upload $tag `
+    "$outDir\Snap-Drivers-Pro-Setup.exe" `
+    "$outDir\Snap-Drivers-Pro-Setup.exe.blockmap" `
+    "$outDir\latest.yml" `
+    --clobber
+if ($LASTEXITCODE -ne 0) { throw 'La subida falló.' }
 
 Write-Host "`n[5/5] Listo" -ForegroundColor Green
-Write-Host "Descarga directa:" -NoNewline
-Write-Host " https://github.com/profilebiome/snapdriverspro/releases/latest/download/Snap-Drivers-Pro-Setup.exe"
-Write-Host "Los clientes verán el aviso de actualización en su siguiente arranque (o al pulsar «Buscar actualizaciones»)."
+gh release view $tag --json assets -q '.assets[] | .name + "  " + (.size|tostring)'
+Write-Host "Descarga directa: https://github.com/profilebiome/snapdriverspro/releases/latest/download/Snap-Drivers-Pro-Setup.exe"
+Write-Host "Web: https://profilebiome.github.io/snapdriverspro/"
