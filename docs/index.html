@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Snap Drivers Pro — Los drivers de tu PC, al día y desde la fuente oficial</title>
+    <title>Snap Drivers Pro — Descarga el actualizador de drivers</title>
     <meta
       name="description"
-      content="Snap Drivers Pro escanea los controladores de tu PC, detecta actualizaciones reales de Windows Update y descarga el paquete oficial de Microsoft. Un solo permiso para instalar todo."
+      content="Descarga Snap Drivers Pro: escanea los controladores de tu PC, detecta actualizaciones de Windows Update y descarga el paquete oficial con un solo permiso."
     />
     <meta property="og:title" content="Snap Drivers Pro" />
     <meta property="og:description" content="Escanea, descarga e instala los drivers de cualquier PC desde las fuentes oficiales." />
@@ -20,7 +20,7 @@
     />
   </head>
   <body>
-    <div class="glow glow--hero" aria-hidden="true"></div>
+    <div class="glow glow--top" aria-hidden="true"></div>
 
     <header class="nav">
       <a class="brand" href="#top">
@@ -32,57 +32,75 @@
         </span>
         <span>Snap Drivers <em>Pro</em></span>
       </a>
-      <nav class="nav__links">
-        <a href="#funciones">Funciones</a>
-        <a href="#capturas">Capturas</a>
-        <a href="#marcas">Compatibilidad</a>
-        <a href="#preguntas">Preguntas</a>
-      </nav>
-      <a class="btn btn--nav" href="#descargar">Descargar</a>
+      <span class="nav__version" id="navVersion">v2.0.2</span>
     </header>
 
     <main id="top">
+      <!-- DESCARGA PRIMERO -->
+      <section class="download" id="descargar">
+        <div class="download__copy">
+          <span class="eyebrow">Descárgalo y pruébalo</span>
+          <h1>Empieza en menos de un minuto</h1>
+          <p>
+            Instalador por usuario, sin permisos de administrador para instalar y sin tiendas de terceros.
+            La app se actualiza sola cuando publicamos una versión nueva.
+          </p>
+          <ul class="checklist">
+            <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7"></path></svg></span>Escaneo y auditoría sin tocar el sistema</li>
+            <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7"></path></svg></span>Descargas desde el catálogo oficial de Microsoft</li>
+            <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7"></path></svg></span>Datos, catálogo y registro en tu propia carpeta</li>
+            <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7"></path></svg></span>Se actualiza sola desde las releases del proyecto</li>
+          </ul>
+        </div>
+
+        <aside class="card">
+          <div class="card__top">
+            <span class="card__chip">Windows 10 · 11</span>
+            <span class="card__chip card__chip--muted">x64</span>
+          </div>
+          <div class="card__version">
+            <span>Versión estable</span>
+            <strong id="cardVersion">2.0.2</strong>
+          </div>
+          <dl class="card__specs">
+            <div><dt>Instalador</dt><dd id="cardSize">116 MB</dd></div>
+            <div><dt>Idioma</dt><dd>Español</dd></div>
+            <div><dt>Permisos</dt><dd>Solo para instalar drivers</dd></div>
+          </dl>
+          <a
+            class="btn btn--primary btn--download"
+            id="ctaDownload"
+            href="https://github.com/profilebiome/snapdriverspro/releases/latest/download/Snap-Drivers-Pro-Setup.exe"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 20h16" /></svg>
+            Descargar Snap Drivers Pro
+          </a>
+          <p class="card__foot">
+            Descarga directa del último instalador ·
+            <a href="https://github.com/profilebiome/snapdriverspro/releases" target="_blank" rel="noopener">versiones anteriores</a>
+          </p>
+        </aside>
+      </section>
+
       <!-- HERO -->
       <section class="hero">
         <div class="hero__copy">
-          <span class="eyebrow"><span class="dot"></span> Windows 10 y 11 · x64 · 116 MB</span>
-          <h1>Los drivers de tu PC, <span class="grad">al día y desde la fuente oficial</span></h1>
+          <h2>Los drivers de tu PC, <span class="grad">al día y desde la fuente oficial</span></h2>
           <p class="hero__lead">
             Escanea todos los controladores, detecta lo que Windows Update ofrece de verdad y descarga el paquete
             firmado que Microsoft publica para tu hardware exacto. Todo, con un único permiso.
           </p>
-          <div class="hero__cta">
-            <a class="btn btn--primary btn--xl" id="ctaTop" href="https://github.com/profilebiome/snapdriverspro/releases/latest/download/Snap-Drivers-Pro-Setup.exe">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 20h16" /></svg>
-              Descargar gratis
-            </a>
-            <a class="btn btn--ghost btn--xl" href="#descargar">Ver requisitos</a>
-          </div>
-          <ul class="hero__meta">
-            <li><b id="heroVersion">2.0.2</b> versión actual</li>
-            <li>Instalador por usuario</li>
-            <li>Español</li>
-          </ul>
         </div>
-
         <div class="hero__visual">
           <div class="window">
             <div class="window__bar"><span></span><span></span><span></span></div>
             <img src="shots/results.png" width="1366" height="728" alt="Snap Drivers Pro mostrando la auditoría de controladores" />
           </div>
-          <div class="float float--a">
-            <b>9</b>
-            <span>actualizaciones<br />detectadas</span>
-          </div>
-          <div class="float float--b">
-            <b>1</b>
-            <span>permiso para<br />instalarlas todas</span>
-          </div>
         </div>
       </section>
 
       <!-- LOGOS -->
-      <section class="logos" id="marcas" aria-label="Fabricantes compatibles">
+      <section class="logos" aria-label="Fabricantes compatibles">
         <p class="logos__label">Compatible con equipos y componentes de</p>
         <div class="logos__grid">
           <span class="logos__tile"><img src="logos/intel.svg" alt="Intel" loading="lazy" /></span>
@@ -99,12 +117,9 @@
           <span class="logos__tile"><img src="logos/msi.svg" alt="MSI" loading="lazy" /></span>
         </div>
         <p class="logos__more">Y también Razer, Samsung, Framework, Corsair, HyperX, Gigabyte, Realtek y más.</p>
-        <p class="logos__note">
-          Logos de sus propietarios, mostrados solo para indicar compatibilidad.
-        </p>
       </section>
 
-      <!-- FEATURES -->
+      <!-- FUNCIONES -->
       <section class="section" id="funciones">
         <span class="eyebrow">Qué hace</span>
         <h2>Un actualizador honesto, no una tienda de drivers</h2>
@@ -163,15 +178,6 @@
       <section class="section section--shots" id="capturas">
         <span class="eyebrow">Así se ve</span>
         <h2>Todo en una ventana</h2>
-        <p class="lead">Capturas reales del programa en un equipo de 2012 con Windows 10: así de claro queda qué está al día y qué no.</p>
-
-        <figure class="shot shot--wide">
-          <div class="window">
-            <div class="window__bar"><span></span><span></span><span></span></div>
-            <img src="shots/results.png" alt="Lista de controladores con su estado" loading="lazy" />
-          </div>
-          <figcaption>Auditoría completa con estado, versión y fecha de cada controlador.</figcaption>
-        </figure>
 
         <div class="shot-grid">
           <figure class="shot">
@@ -179,28 +185,18 @@
               <div class="window__bar"><span></span><span></span><span></span></div>
               <img src="shots/download.png" alt="Paquetes oficiales del catálogo de Microsoft" loading="lazy" />
             </div>
-            <figcaption>Paquetes oficiales para el hardware exacto.</figcaption>
           </figure>
           <figure class="shot">
             <div class="window">
               <div class="window__bar"><span></span><span></span><span></span></div>
               <img src="shots/batch.png" alt="Cola de actualización con un solo permiso" loading="lazy" />
             </div>
-            <figcaption>Cola de instalación con un solo permiso.</figcaption>
           </figure>
           <figure class="shot">
             <div class="window">
               <div class="window__bar"><span></span><span></span><span></span></div>
               <img src="shots/logs.png" alt="Registro de actividad" loading="lazy" />
             </div>
-            <figcaption>Registro de todo lo que pasó, exportable.</figcaption>
-          </figure>
-          <figure class="shot">
-            <div class="window">
-              <div class="window__bar"><span></span><span></span><span></span></div>
-              <img src="shots/hardware.png" alt="Inventario de componentes" loading="lazy" />
-            </div>
-            <figcaption>Inventario del equipo: CPU, GPU, RAM, discos y red.</figcaption>
           </figure>
         </div>
       </section>
@@ -223,48 +219,6 @@
             <span>Un permiso de Windows aplica todo; si algún paquete lo pide, reinicias y vuelves a escanear.</span>
           </li>
         </ol>
-      </section>
-
-      <!-- DESCARGA -->
-      <section class="download" id="descargar">
-        <div class="download__copy">
-          <span class="eyebrow">Descárgalo y pruébalo</span>
-          <h2>Empieza en menos de un minuto</h2>
-          <p>
-            Instalador por usuario, sin permisos de administrador para instalar y sin tiendas de terceros.
-            La app se actualiza sola cuando publicamos una versión nueva.
-          </p>
-          <ul class="checklist">
-            <li>Escaneo y auditoría sin tocar el sistema</li>
-            <li>Descargas desde el catálogo oficial de Microsoft</li>
-            <li>Datos, catálogo y registro en tu propia carpeta</li>
-            <li>Se actualiza sola desde las releases del proyecto</li>
-          </ul>
-        </div>
-
-        <aside class="card">
-          <div class="card__top">
-            <span class="card__chip">Windows 10 · 11</span>
-            <span class="card__chip card__chip--muted">x64</span>
-          </div>
-          <div class="card__version">
-            <span>Versión estable</span>
-            <strong id="cardVersion">2.0.2</strong>
-          </div>
-          <dl class="card__specs">
-            <div><dt>Instalador</dt><dd id="cardSize">116 MB</dd></div>
-            <div><dt>Idioma</dt><dd>Español</dd></div>
-            <div><dt>Permisos</dt><dd>Solo para instalar drivers</dd></div>
-          </dl>
-          <a class="btn btn--primary btn--download" href="https://github.com/profilebiome/snapdriverspro/releases/latest/download/Snap-Drivers-Pro-Setup.exe">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 20h16" /></svg>
-            Descargar Snap Drivers Pro
-          </a>
-          <p class="card__foot">
-            Descarga directa del último instalador ·
-            <a href="https://github.com/profilebiome/snapdriverspro/releases" target="_blank" rel="noopener">versiones anteriores</a>
-          </p>
-        </aside>
       </section>
 
       <!-- FAQ -->
@@ -300,30 +254,6 @@
       </section>
     </main>
 
-    <footer class="footer">
-      <div class="footer__brand">
-        <span class="brand__mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32">
-            <rect x="1.5" y="1.5" width="29" height="29" rx="8" class="plate" />
-            <path d="M16 8.5v11m0-11-4.2 4.2M16 8.5l4.2 4.2M9.5 23.5h13" class="arrow" />
-          </svg>
-        </span>
-        <div>
-          <strong>Snap Drivers Pro</strong>
-          <p>Mantén cualquier PC al día sin depender de tiendas de drivers.</p>
-        </div>
-      </div>
-      <nav class="footer__links">
-        <a href="https://github.com/profilebiome/snapdriverspro/releases" target="_blank" rel="noopener">Versiones</a>
-        <a href="https://github.com/profilebiome/snapdriverspro/issues" target="_blank" rel="noopener">Soporte</a>
-        <a href="https://github.com/profilebiome/snapdriverspro" target="_blank" rel="noopener">Repositorio</a>
-      </nav>
-      <p class="footer__legal">
-        Sin afiliación con Microsoft, Intel, NVIDIA, AMD ni con los fabricantes mencionados. Los logos pertenecen a
-        sus propietarios y se muestran solo para indicar compatibilidad.
-      </p>
-    </footer>
-
     <script>
       (function () {
         var RELEASE = 'https://api.github.com/repos/profilebiome/snapdriverspro/releases/latest';
@@ -339,10 +269,10 @@
             })[0];
             var size = asset && asset.size ? Math.round(asset.size / (1024 * 1024)) + ' MB' : null;
 
-            ['heroVersion', 'cardVersion'].forEach(function (id) {
-              var node = document.getElementById(id);
-              if (node) node.textContent = version;
-            });
+            var card = document.getElementById('cardVersion');
+            if (card) card.textContent = version;
+            var nav = document.getElementById('navVersion');
+            if (nav) nav.textContent = 'v' + version;
             if (size) {
               var sizeNode = document.getElementById('cardSize');
               if (sizeNode) sizeNode.textContent = size;
