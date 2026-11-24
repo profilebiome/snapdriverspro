@@ -33,6 +33,7 @@
         <span>Snap Drivers <em>Pro</em></span>
       </a>
       <span class="nav__version" id="navVersion">v2.0.2</span>
+      <a class="btn btn--nav" href="#descargar">Descargar</a>
     </header>
 
     <main id="top">
@@ -42,14 +43,13 @@
           <span class="eyebrow">Descárgalo y pruébalo</span>
           <h1>Empieza en menos de un minuto</h1>
           <p>
-            Instalador por usuario, sin permisos de administrador para instalar y sin tiendas de terceros.
-            La app se actualiza sola cuando publicamos una versión nueva.
+            Instalador por usuario, sin permisos de administrador para escanear y con un solo permiso de
+            Windows al instalar los drivers.
           </p>
           <ul class="checklist">
             <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7"></path></svg></span>Escaneo y auditoría sin tocar el sistema</li>
             <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7"></path></svg></span>Descargas desde el catálogo oficial de Microsoft</li>
             <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7"></path></svg></span>Datos, catálogo y registro en tu propia carpeta</li>
-            <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7"></path></svg></span>Se actualiza sola desde las releases del proyecto</li>
           </ul>
         </div>
 
@@ -57,15 +57,13 @@
           <div class="card__top">
             <span class="card__chip">Windows 10 · 11</span>
             <span class="card__chip card__chip--muted">x64</span>
-          </div>
-          <div class="card__version">
-            <span>Versión estable</span>
-            <strong id="cardVersion">2.0.2</strong>
+            <span class="card__version"><span>v</span><strong id="cardVersion">2.0.2</strong></span>
           </div>
           <dl class="card__specs">
             <div><dt>Instalador</dt><dd id="cardSize">116 MB</dd></div>
             <div><dt>Idioma</dt><dd>Español</dd></div>
-            <div><dt>Permisos</dt><dd>Solo para instalar drivers</dd></div>
+            <div><dt>Permisos</dt><dd>Un permiso de Windows</dd></div>
+            <div><dt>Versiones</dt><dd><a href="https://github.com/profilebiome/snapdriverspro/releases" target="_blank" rel="noopener">anteriores</a></dd></div>
           </dl>
           <a
             class="btn btn--primary btn--download"
@@ -75,10 +73,6 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 20h16" /></svg>
             Descargar Snap Drivers Pro
           </a>
-          <p class="card__foot">
-            Descarga directa del último instalador ·
-            <a href="https://github.com/profilebiome/snapdriverspro/releases" target="_blank" rel="noopener">versiones anteriores</a>
-          </p>
         </aside>
       </section>
 
@@ -93,7 +87,6 @@
         </div>
         <div class="hero__visual">
           <div class="window">
-            <div class="window__bar"><span></span><span></span><span></span></div>
             <img src="shots/results.png" width="1366" height="728" alt="Snap Drivers Pro mostrando la auditoría de controladores" />
           </div>
         </div>
@@ -115,8 +108,12 @@
           <span class="logos__tile"><img src="logos/asus.svg" alt="ASUS" loading="lazy" /></span>
           <span class="logos__tile"><img src="logos/acer.svg" alt="Acer" loading="lazy" /></span>
           <span class="logos__tile"><img src="logos/msi.svg" alt="MSI" loading="lazy" /></span>
+          <span class="logos__tile"><img src="logos/razer.svg" alt="Razer" loading="lazy" /></span>
+          <span class="logos__tile"><img src="logos/samsung.svg" alt="Samsung" loading="lazy" /></span>
+          <span class="logos__tile"><img src="logos/framework.svg" alt="Framework" loading="lazy" /></span>
+          <span class="logos__tile"><img src="logos/corsair.svg" alt="Corsair" loading="lazy" /></span>
+          <span class="logos__tile"><img src="logos/hyperx.svg" alt="HyperX" loading="lazy" /></span>
         </div>
-        <p class="logos__more">Y también Razer, Samsung, Framework, Corsair, HyperX, Gigabyte, Realtek y más.</p>
       </section>
 
       <!-- FUNCIONES -->
@@ -182,19 +179,19 @@
         <div class="shot-grid">
           <figure class="shot">
             <div class="window">
-              <div class="window__bar"><span></span><span></span><span></span></div>
+              
               <img src="shots/download.png" alt="Paquetes oficiales del catálogo de Microsoft" loading="lazy" />
             </div>
           </figure>
           <figure class="shot">
             <div class="window">
-              <div class="window__bar"><span></span><span></span><span></span></div>
+              
               <img src="shots/batch.png" alt="Cola de actualización con un solo permiso" loading="lazy" />
             </div>
           </figure>
           <figure class="shot">
             <div class="window">
-              <div class="window__bar"><span></span><span></span><span></span></div>
+              
               <img src="shots/logs.png" alt="Registro de actividad" loading="lazy" />
             </div>
           </figure>
@@ -251,6 +248,14 @@
             <p>Sí. En clases del sistema manda el fabricante del equipo (Legion, ROG, Predator, OMEN, Alienware, MSI…); en GPU y red, el fabricante del chip.</p>
           </details>
         </div>
+      </section>
+
+      <section class="closing">
+        <p>¿Listo para tener los drivers al día?</p>
+        <a class="btn btn--primary btn--download" href="https://github.com/profilebiome/snapdriverspro/releases/latest/download/Snap-Drivers-Pro-Setup.exe">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 20h16" /></svg>
+          Descargar Snap Drivers Pro
+        </a>
       </section>
     </main>
 
