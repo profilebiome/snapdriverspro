@@ -39,6 +39,9 @@ solo desde GitHub y todos los datos se guardan en tu carpeta.
   punto de restauración.
 - **Inventario del equipo**: procesador, gráficos, memoria (módulo a módulo), almacenamiento, red, audio y
   batería, con sus versiones.
+- **Resolver los «Revisar»**: cuando ya comprobaste un controlador en la web del fabricante, **Marcar al día**
+  (por fila o en lote) lo cierra para esa versión exacta y se guarda en `verificados.json`. Si la versión
+  cambia, el aviso vuelve.
 - **Informes**: HTML autocontenido, CSV para Excel y JSON con todo el modelo de datos.
 
 ![Actualizar todo con un solo permiso](docs/actualizar-todo.png)
@@ -199,7 +202,7 @@ npm run dist
 
 ## Si una actualización deja la app sin arrancar
 
-Una actualización interrumpida puede dejar `app.asar` a medio reemplazar. Desde la 2.0.3 la app no muestra el
+Una actualización interrumpida puede dejar `app.asar` a medio reemplazar. Desde la 2.1.0 la app no muestra el
 diálogo de error de JavaScript: registra el fallo en `Registros/arranque.log` y, si el archivo está dañado,
 muestra un aviso corto pidiendo reinstalar. El instalador se aplica ahora con la app cerrada
 (`quitAndInstall(true, true)`) para que el archivo no quede bloqueado. Antes de publicar, `npm run verify:build`

@@ -65,6 +65,17 @@ test('a driver installed by the app is reported as up to date', () => {
   assert.match(result.reason, /Instalado por Snap Drivers Pro/);
 });
 
+test('a driver verified by the user is reported as up to date', () => {
+  const result = v.verdictFor(driver({ driverDate: '2018-07-17T00:00:00Z' }), null, null, {
+    ageThresholdMonths: 24,
+    now: new Date('2026-11-24T00:00:00Z'),
+    verifiedRecord: { at: '2026-11-24T09:00:00Z', version: '10.1.1.44' },
+  });
+  assert.equal(result.level, 'current');
+  assert.equal(result.source, 'verified');
+  assert.match(result.reason, /Verificado por ti/);
+});
+
 test('a Windows Update match wins over catalog and age', () => {
   const result = v.verdictFor(driver(), { updateId: 'x', provider: 'Intel', model: 'Intel(R) HD Graphics', driverDate: '2024-01-01T00:00:00Z' }, { latestVersion: '99.0.0.0' }, {
     ageThresholdMonths: 24,

@@ -453,6 +453,13 @@ function renderSelection(rows = visibleRows()) {
   const batchBtn = $('#batchBtn');
   batchBtn.disabled = updatable.length === 0;
   $('#batchBtnLabel').textContent = updatable.length ? `Actualizar todo (${updatable.length})` : 'Actualizar todo';
+
+  const scope = count > 0 ? rows : visibleRows();
+  const verifiable = scope.filter((row) => row.verdict.level === 'review' || row.verdict.level === 'unknown');
+  const verifyBtn = $('#verifyBtn');
+  verifyBtn.disabled = verifiable.length === 0;
+  verifyBtn.innerHTML = `${icon('check')} Marcar al día${verifiable.length ? ` (${verifiable.length})` : ''}`;
+  verifyBtn.dataset.keys = JSON.stringify(verifiable.map((row) => row.key));
   $('#exportBtn').disabled = state.rows.length === 0;
   $('#installBtn').disabled = false;
 }
@@ -688,7 +695,9 @@ function renderDrawer() {
   `;
 
   const primaryRoute = routes[0] || null;
+  const canVerify = row.verdict.level === 'review' || row.verdict.level === 'unknown';
   $('#drawerFoot').innerHTML = `
+    ${canVerify ? `<button class="btn btn--quiet" data-action="verify" data-key="${escapeHtml(row.key)}">${icon('check')} Marcar al día</button>` : ''}
     <button class="btn btn--quiet" data-action="install-package">${icon('install')} Instalar paquete</button>
     <button class="btn btn--primary" data-action="open-route" data-route="${primaryRoute ? primaryRoute.id : 'catalog'}" data-key="${escapeHtml(row.key)}" ${primaryRoute ? '' : 'disabled'} title="${primaryRoute ? escapeHtml(primaryRoute.label) : 'Sin enlace'}">
       ${icon('external')} Descarga oficial${primaryRoute ? ` · ${escapeHtml(primaryRoute.id === 'oem' ? 'equipo' : primaryRoute.id === 'chip' ? 'componente' : 'Microsoft')}` : ''}
@@ -1812,6 +1821,10 @@ function bindEvents() {
 
   $('#downloadClose').addEventListener('click', () => closeDownloadModal());
   $('#batchBtn').addEventListener('click', openBatch);
+  $('#verifyBtn').addEventListener('click', () => {
+    const keys = JSON.parse($('#verifyBtn').dataset.keys || '[]');
+    guard(markVerified(keys));
+  });
   $('#batchClose').addEventListener('click', closeBatch);
   $('#batchPrimary').addEventListener('click', () => {
     if (state.batch.phase === 'ready') guard(installBatch());
@@ -1972,6 +1985,26 @@ function setLevel(level) {
   renderRows();
 }
 
+async function markVerified(keys) {
+  const list = (Array.isArray(keys) ? keys : [keys]).filter(Boolean);
+  if (list.length === 0) return;
+  const result = await callApi(api.verifyRows, list, true).catch(() => null);
+  if (!result) return;
+  for (const item of result.updated || []) {
+    const row = state.rows.find((candidate) => candidate.key === item.key);
+    if (row) row.verdict = item.verdict;
+  }
+  state.selection.clear();
+  renderAll();
+  toast(
+    result.count === 1
+      ? 'Controlador marcado como al día.'
+      : `${result.count} controladores marcados como al día.`,
+    'ok',
+  );
+  guard(loadLogs());
+}
+
 function handleRowAction(action, key, route) {
   if (!key) return;
   if (action === 'detail') {
@@ -1980,6 +2013,10 @@ function handleRowAction(action, key, route) {
   }
   if (action === 'open-download') {
     openDownload(key);
+    return;
+  }
+  if (action === 'verify') {
+    guard(markVerified([key]));
     return;
   }
   const legacy = { 'open-vendor': 'chip', 'open-oem': 'oem', 'open-wu': 'wu', 'open-catalog': 'catalog', catalog: 'catalog' };

@@ -205,6 +205,16 @@ function verdictFor(driver, update, entry, options = {}) {
     };
   }
 
+  if (options.verifiedRecord) {
+    return {
+      level: 'current',
+      source: 'verified',
+      latestVersion: null,
+      updateId: null,
+      reason: `Verificado por ti el ${formatDate(options.verifiedRecord.at)}: comprobado en la web del fabricante.`,
+    };
+  }
+
   if (options.installedRecord) {
     return {
       level: 'current',

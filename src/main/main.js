@@ -227,6 +227,12 @@ async function runScreenshots(win) {
   await win.webContents.executeJavaScript("document.querySelector('#logsClose').click()", true);
   await wait(300);
 
+  await win.webContents.executeJavaScript("document.querySelector('#levelChips .chip[data-level=review]').click()", true);
+  await wait(600);
+  await win.webContents.executeJavaScript("document.querySelector('#verifyBtn').click()", true);
+  await wait(1200);
+  await capture(win, '15-verificados.png');
+
   await win.webContents.executeJavaScript('window.__dupShots.openInstall()', true);
   await wait(600);
   await capture(win, '07-instalar.png');

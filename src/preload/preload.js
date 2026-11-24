@@ -14,6 +14,8 @@ contextBridge.exposeInMainWorld('dup', {
     return () => ipcRenderer.removeListener('scan:event', listener);
   },
 
+  verifyRows: (rowKeys, verified) => call('verdict:verify', { rowKeys, verified }),
+
   openLink: (rowKey, which) => call('links:open', { rowKey, which }),
   openLinks: (rowKeys, which) => call('links:openMany', { rowKeys, which }),
 

@@ -15,6 +15,7 @@ const powershell = require('./powershell');
 const downloads = require('./catalog-download');
 const logger = require('./logger');
 const installedStore = require('./installed');
+const verifiedStore = require('./verified');
 const elevate = require('./elevate');
 const updater = require('./updater');
 
@@ -184,6 +185,7 @@ function register({ getWindow }) {
         const settings = settingsStore.load();
         const catalog = catalogStore.load();
         const installedRecords = installedStore.read().filter((entry) => installedStore.isFresh(entry));
+        const verifiedRecords = verifiedStore.read();
         const partialRows = scan.buildRows({
           system: systemResult.system,
           drivers: systemResult.drivers,
@@ -192,6 +194,7 @@ function register({ getWindow }) {
           catalogEntries: catalog.entries,
           settings,
           installedRecords,
+          verifiedRecords,
         });
         session.rows = partialRows;
         session.system = systemResult.system;
@@ -223,6 +226,7 @@ function register({ getWindow }) {
           catalogEntries: catalog.entries,
           settings,
           installedRecords,
+          verifiedRecords,
         });
         const stats = scan.summarize(rows, {
           updatesAvailable: updateResult.available,
@@ -271,6 +275,34 @@ function register({ getWindow }) {
     session.scanning = false;
     powershell.killAll();
     return { cancelled: true };
+  });
+
+  handle('verdict:verify', async (_event, { rowKeys, verified = true } = {}) => {
+    const rows = rowsByKey(rowKeys);
+    if (rows.length === 0) throw new Error('No hay controladores seleccionados.');
+    const updated = [];
+    for (const row of rows) {
+      if (verified) {
+        const record = verifiedStore.record({
+          hardwareIds: row.hardwareIds,
+          version: row.driverVersion,
+          label: row.deviceName,
+        });
+        if (!record) continue;
+        row.verdict = {
+          level: 'current',
+          source: 'verified',
+          latestVersion: null,
+          updateId: null,
+          reason: 'Verificado por ti: comprobado en la web del fabricante.',
+        };
+      }
+      updated.push({ key: row.key, verdict: row.verdict });
+    }
+    session.stats = scan.summarize(session.rows, { ...(session.stats || {}) });
+    persistScan();
+    logger.info('scan', `${updated.length} controlador(es) marcados como verificados`);
+    return { count: updated.length, updated };
   });
 
   handle('links:open', async (_event, { rowKey, which } = {}) => {
