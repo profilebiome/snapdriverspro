@@ -220,7 +220,8 @@ Los clientes ven el aviso en su siguiente arranque.
 
 ## Web de descarga
 
-`docs/index.html` es la landing publicada con GitHub Pages (`https://profilebiome.github.io/snapdriverspro/`).
+La landing vive en **https://snapdrivers.profilebio.me** (GitHub Pages con dominio propio, declarado en
+`docs/CNAME`; también responde en `https://profilebiome.github.io/snapdriverspro/`).
 El botón apunta a la descarga directa del último instalador:
 
 ```
