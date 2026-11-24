@@ -40,8 +40,8 @@ function createWindow() {
   nativeTheme.themeSource = 'dark';
 
   mainWindow = new BrowserWindow({
-    width: isScreenshotMode ? 1366 : 1280,
-    height: isScreenshotMode ? 768 : 820,
+    width: isScreenshotMode ? 1600 : 1280,
+    height: isScreenshotMode ? 1000 : 820,
     minWidth: 1040,
     minHeight: 680,
     show: false,
@@ -91,7 +91,7 @@ function createWindow() {
     mainWindow = null;
   });
 
-  if (isScreenshotMode) {
+  if (isScreenshotMode && !process.env.DUP_SHOT_NO_AUTO) {
     mainWindow.webContents.once('did-finish-load', () => {
       setTimeout(() => runScreenshots(mainWindow).catch((error) => {
         console.error('[screenshot]', error);
