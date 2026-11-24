@@ -91,7 +91,7 @@ function createWindow() {
     mainWindow = null;
   });
 
-  if (isScreenshotMode && !process.env.DUP_SHOT_NO_AUTO) {
+  if (isScreenshotMode) {
     mainWindow.webContents.once('did-finish-load', () => {
       setTimeout(() => runScreenshots(mainWindow).catch((error) => {
         console.error('[screenshot]', error);
