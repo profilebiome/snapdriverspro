@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>Snap Drivers Pro</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <svg class="sprite" aria-hidden="true" focusable="false">
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" /></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" /><path d="m16 16 4.5 4.5" /></symbol>
+      <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" /></symbol>
+      <symbol id="i-install" viewBox="0 0 24 24"><path d="M12 3v10m0 0 4-4m-4 4-4-4" /><rect x="4" y="15" width="16" height="6" rx="1.6" /></symbol>
+      <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8" /></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" /></symbol>
+      <symbol id="i-min" viewBox="0 0 24 24"><path d="M5 12h14" /></symbol>
+      <symbol id="i-max" viewBox="0 0 24 24"><rect x="5.5" y="5.5" width="13" height="13" rx="1.5" /></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7" /></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M15 5.5A1.5 1.5 0 0 0 13.5 4H5.5A1.5 1.5 0 0 0 4 5.5v8A1.5 1.5 0 0 0 5.5 15" /></symbol>
+      <symbol id="i-folder" viewBox="0 0 24 24"><path d="M4 7.5A1.5 1.5 0 0 1 5.5 6h4l2 2.5h7A1.5 1.5 0 0 1 20 10v7.5A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5Z" /></symbol>
+      <symbol id="i-device" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="12" rx="1.6" /><path d="M9 20h6M12 16v4" /></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5 19 6v6c0 4.4-3 7.3-7 8.5-4-1.2-7-4.1-7-8.5V6Z" /><path d="m9 12 2 2 4-4" /></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m8 10 4 4 4-4" /></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4.5 21 19H3Z" /><path d="M12 10v4.2M12 17h.01" /></symbol>
+      <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1.5" /><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4" /></symbol>
+      <symbol id="i-link" viewBox="0 0 24 24"><path d="M10.5 13.5a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1.2 1.2" /><path d="M13.5 10.5a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1.2-1.2" /></symbol>
+      <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 4h7l5 5v11H6Z" /><path d="M13 4v5h5" /></symbol>
+      <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 20V4m0 0-6 6m6-6 6 6" /></symbol>
+    </svg>
+
+    <div class="app">
+      <header class="titlebar">
+        <div class="titlebar__brand">
+          <span class="mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32">
+              <rect x="1.5" y="1.5" width="29" height="29" rx="8" class="mark__plate" />
+              <path d="M16 8.5v11m0-11-4.2 4.2M16 8.5l4.2 4.2" class="mark__arrow" />
+              <path d="M9.5 23.5h13" class="mark__base" />
+            </svg>
+          </span>
+          <span class="titlebar__name">Snap Drivers <em>Pro</em></span>
+          <span class="pill" id="portablePill" hidden>portable</span>
+        </div>
+        <div class="titlebar__drag"></div>
+        <div class="titlebar__controls">
+          <button class="winbtn" data-window="minimize" title="Minimizar" aria-label="Minimizar">
+            <svg><use href="#i-min" /></svg>
+          </button>
+          <button class="winbtn" data-window="maximize" title="Maximizar" aria-label="Maximizar">
+            <svg><use href="#i-max" /></svg>
+          </button>
+          <button class="winbtn winbtn--close" data-window="close" title="Cerrar" aria-label="Cerrar">
+            <svg><use href="#i-close" /></svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div class="hero__text">
+          <h1>Auditoría de controladores</h1>
+          <p class="hero__machine" id="machineLine">Sin datos del equipo todavía</p>
+        </div>
+        <div class="hero__actions">
+          <button class="btn btn--ghost" id="hardwareBtn" title="Ver los componentes detectados en este equipo">
+            <svg><use href="#i-cpu" /></svg>
+            Componentes
+          </button>
+          <button class="btn btn--primary" id="scanBtn">
+            <svg class="btn__icon"><use href="#i-refresh" /></svg>
+            <span id="scanBtnLabel">Escanear equipo</span>
+          </button>
+        </div>
+        <div class="progress" id="progress" hidden aria-hidden="true">
+          <div class="progress__bar"><span id="progressFill"></span></div>
+        </div>
+      </section>
+
+      <section class="readout" id="readout" aria-label="Resumen del escaneo">
+        <button class="readout__cell" data-level="update">
+          <span class="readout__label">Actualizar</span>
+          <span class="readout__value" id="statUpdates">—</span>
+          <span class="readout__hint" id="statUpdatesHint">Windows Update + catálogo</span>
+        </button>
+        <button class="readout__cell" data-level="error">
+          <span class="readout__label">Con error</span>
+          <span class="readout__value" id="statErrors">—</span>
+          <span class="readout__hint">dispositivos con problema</span>
+        </button>
+        <button class="readout__cell" data-level="review">
+          <span class="readout__label">Revisar</span>
+          <span class="readout__value" id="statReview">—</span>
+          <span class="readout__hint">controladores antiguos</span>
+        </button>
+        <button class="readout__cell" data-level="current">
+          <span class="readout__label">Al día</span>
+          <span class="readout__value" id="statCurrent">—</span>
+          <span class="readout__hint">sin acción necesaria</span>
+        </button>
+        <button class="readout__cell" data-level="unknown">
+          <span class="readout__label">Sin datos</span>
+          <span class="readout__value" id="statUnknown">—</span>
+          <span class="readout__hint">sin versión de referencia</span>
+        </button>
+        <div class="readout__cell readout__cell--total">
+          <span class="readout__label">Controladores</span>
+          <span class="readout__value" id="statTotal">—</span>
+          <span class="readout__hint" id="statTotalHint">en este equipo</span>
+        </div>
+      </section>
+
+      <section class="toolbar">
+        <label class="search">
+          <svg><use href="#i-search" /></svg>
+          <input id="searchInput" type="search" placeholder="Buscar dispositivo, fabricante o hardware ID" autocomplete="off" spellcheck="false" />
+        </label>
+        <div class="chips" id="levelChips" role="group" aria-label="Filtrar por estado">
+          <button class="chip is-active" data-level="all">Todos</button>
+          <button class="chip" data-level="update">Actualizar</button>
+          <button class="chip" data-level="review">Revisar</button>
+          <button class="chip" data-level="error">Con error</button>
+          <button class="chip" data-level="unknown">Sin datos</button>
+          <button class="chip" data-level="current">Al día</button>
+        </div>
+        <div class="toolbar__spacer"></div>
+        <select class="select" id="classFilter" aria-label="Filtrar por clase">
+          <option value="all">Todas las clases</option>
+        </select>
+        <select class="select" id="sortSelect" aria-label="Ordenar la lista">
+          <option value="level">Ordenar: estado</option>
+          <option value="name">Ordenar: nombre</option>
+          <option value="date">Ordenar: fecha</option>
+          <option value="vendor">Ordenar: fabricante</option>
+        </select>
+        <label class="switch" title="Mostrar también dispositivos de software (no hardware)">
+          <input type="checkbox" id="softwareToggle" />
+          <span class="switch__track"></span>
+          <span class="switch__label">Software</span>
+        </label>
+      </section>
+
+      <section class="actions">
+        <div class="actions__selection" id="selectionInfo">Nada seleccionado</div>
+        <div class="actions__buttons">
+          <button class="btn btn--quiet" id="openUpdatesBtn" disabled>
+            <svg><use href="#i-external" /></svg>
+            Abrir descargas
+          </button>
+          <button class="btn btn--primary" id="batchBtn" disabled>
+            <svg><use href="#i-download" /></svg>
+            <span id="batchBtnLabel">Actualizar todo</span>
+          </button>
+          <button class="btn btn--quiet" id="installBtn">
+            <svg><use href="#i-install" /></svg>
+            Instalar .inf
+          </button>
+          <div class="menu-wrap">
+            <button class="btn btn--quiet" id="exportBtn" aria-haspopup="true" aria-expanded="false">
+              <svg><use href="#i-file" /></svg>
+              Informe
+              <svg class="btn__chevron"><use href="#i-chevron" /></svg>
+            </button>
+            <div class="menu" id="exportMenu" hidden>
+              <button data-export="html">Informe HTML</button>
+              <button data-export="csv">Hoja de cálculo CSV</button>
+              <button data-export="json">Datos JSON</button>
+            </div>
+          </div>
+          <button class="btn btn--icon" id="settingsBtn" title="Ajustes" aria-label="Ajustes">
+            <svg><use href="#i-settings" /></svg>
+          </button>
+        </div>
+      </section>
+
+      <main class="content">
+        <div class="empty" id="emptyState">
+          <div class="start-panel">
+            <svg class="empty__art" viewBox="0 0 240 160" aria-hidden="true">
+              <rect x="24" y="26" width="192" height="108" rx="12" class="art-plate" />
+              <path d="M24 60h192" class="art-line" />
+              <circle cx="40" cy="44" r="3.4" class="art-dot" />
+              <circle cx="52" cy="44" r="3.4" class="art-dot art-dot--dim" />
+              <rect x="96" y="78" width="48" height="28" rx="5" class="art-chip" />
+              <path d="M120 84v16m0-16-3.6 3.6M120 84l3.6 3.6" class="art-arrow" />
+              <path d="M78 92h-12M174 92h-12" class="art-line" />
+              <circle cx="66" cy="92" r="3" class="art-dot" />
+              <circle cx="174" cy="92" r="3" class="art-dot" />
+            </svg>
+            <h2>Todo listo para auditar este equipo</h2>
+            <p>
+              Se leerán los controladores instalados, se consultará Windows Update y se cruzarán las versiones con las
+              fuentes oficiales. Tarda entre 10 y 40 segundos y no modifica nada.
+            </p>
+            <ul class="start-list">
+              <li>
+                <svg><use href="#i-cpu" /></svg>
+                <span><b>Dispositivos y controladores</b><small>versión, fecha, firma, hardware IDs y estado PnP</small></span>
+              </li>
+              <li>
+                <svg><use href="#i-shield" /></svg>
+                <span><b>Windows Update</b><small>consulta oficial de la categoría Drivers, sin descargar nada</small></span>
+              </li>
+              <li>
+                <svg><use href="#i-link" /></svg>
+                <span><b>Fuentes oficiales</b><small>web del fabricante y Catálogo de Microsoft Update</small></span>
+              </li>
+            </ul>
+            <button class="btn btn--primary" id="emptyScanBtn">
+              <svg class="btn__icon"><use href="#i-refresh" /></svg>
+              Escanear equipo
+            </button>
+            <p class="empty__note">Sin telemetría · sin instalación · solo lectura</p>
+          </div>
+        </div>
+
+        <div class="table" id="tableWrap" hidden>
+          <div class="thead" role="row">
+            <label class="check check--head">
+              <input type="checkbox" id="selectAll" aria-label="Seleccionar todo lo visible" />
+              <span></span>
+            </label>
+            <span class="th th--state">Estado</span>
+            <span class="th th--device">Dispositivo</span>
+            <span class="th th--class">Clase</span>
+            <span class="th th--version">Versión</span>
+            <span class="th th--date">Fecha</span>
+            <span class="th th--vendor">Fabricante</span>
+            <span class="th th--actions"></span>
+          </div>
+          <div class="tbody" id="rows"></div>
+        </div>
+
+        <div class="notices" id="notices"></div>
+      </main>
+
+      <footer class="statusbar">
+        <span id="statusScan">Sin escanear</span>
+        <span class="statusbar__sep"></span>
+        <span id="statusSources">Fuentes: Windows Update · Catálogo de Microsoft Update · webs oficiales</span>
+        <span class="statusbar__spacer"></span>
+        <span id="statusData" class="statusbar__muted"></span>
+        <button class="statusbar__link" id="logsBtn">
+          <svg><use href="#i-file" /></svg>
+          Registro
+        </button>
+        <button class="statusbar__link" id="openFolderBtn">
+          <svg><use href="#i-folder" /></svg>
+          Carpeta de datos
+        </button>
+      </footer>
+    </div>
+
+    <div class="scrim" id="scrim" hidden></div>
+
+    <aside class="drawer" id="drawer" hidden aria-label="Detalle del controlador">
+      <header class="drawer__head">
+        <div>
+          <span class="badge" id="drawerBadge">—</span>
+          <h2 id="drawerTitle">Controlador</h2>
+          <p class="drawer__sub" id="drawerSub"></p>
+        </div>
+        <button class="btn btn--icon" id="drawerClose" aria-label="Cerrar detalle">
+          <svg><use href="#i-close" /></svg>
+        </button>
+      </header>
+      <div class="drawer__body" id="drawerBody"></div>
+      <footer class="drawer__foot" id="drawerFoot"></footer>
+    </aside>
+
+    <section class="modal" id="settingsModal" hidden role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <header class="modal__head">
+        <h2 id="settingsTitle">Ajustes</h2>
+        <button class="btn btn--icon" id="settingsClose" aria-label="Cerrar ajustes">
+          <svg><use href="#i-close" /></svg>
+        </button>
+      </header>
+      <div class="modal__body">
+        <div class="field">
+          <label for="ageThreshold">Avisar cuando un controlador tenga más de</label>
+          <div class="field__row">
+            <input id="ageThreshold" type="number" min="6" max="120" step="1" />
+            <span class="field__unit">meses de antigüedad</span>
+          </div>
+          <p class="field__help">Solo se aplica a controladores de terceros sin versión de referencia publicada.</p>
+        </div>
+
+        <label class="toggle-row">
+          <input type="checkbox" id="restoreToggle" />
+          <span>
+            <strong>Crear un punto de restauración antes de instalar</strong>
+            <small>Recomendado. Requiere permisos de administrador, igual que la instalación.</small>
+          </span>
+        </label>
+
+        <div class="section-head">
+          <h3>Catálogo de referencia</h3>
+          <button class="btn btn--quiet btn--small" id="catalogAddBtn">Añadir familia</button>
+        </div>
+        <p class="field__help">
+          Escribe la última versión que veas en la web oficial de cada familia. Con ese dato la app compara por versión
+          además de por fecha. Se guarda en tu carpeta de datos, nunca se envía a ningún sitio.
+        </p>
+        <div class="catalog" id="catalogList"></div>
+        <div class="about">
+          <div>
+            <strong id="aboutVersion">Snap Drivers Pro</strong>
+            <p id="aboutPath"></p>
+          </div>
+          <div class="modal__foot-actions">
+            <button class="btn btn--quiet btn--small" id="checkUpdatesBtn">Buscar actualizaciones</button>
+            <button class="btn btn--quiet btn--small" id="aboutBtn">Acerca de</button>
+          </div>
+        </div>
+      </div>
+      <footer class="modal__foot">
+        <button class="btn btn--quiet btn--small" id="catalogFolderBtn">
+          <svg><use href="#i-folder" /></svg>
+          Carpeta de datos
+        </button>
+        <div class="modal__foot-actions">
+          <button class="btn btn--quiet" id="settingsCloseFoot">Cerrar</button>
+          <button class="btn btn--primary" id="catalogSaveBtn">Guardar catálogo</button>
+        </div>
+      </footer>
+    </section>
+
+    <section class="install-modal" id="installModal" hidden role="dialog" aria-modal="true" aria-labelledby="installTitle">
+      <header class="modal__head">
+        <h2 id="installTitle">Instalar un paquete de controlador</h2>
+        <button class="btn btn--icon" id="installClose" aria-label="Cerrar">
+          <svg><use href="#i-close" /></svg>
+        </button>
+      </header>
+      <div class="modal__body">
+        <p class="field__help">
+          Descarga el paquete desde la web del fabricante, descomprímelo y elige el archivo <code>.inf</code> (o la carpeta
+          completa). Se aplicará con <code>pnputil</code> y permisos de administrador.
+        </p>
+        <div class="picked" id="pickedPath">
+          <svg><use href="#i-file" /></svg>
+          <span>Ningún paquete elegido</span>
+        </div>
+        <div class="install-modal__actions">
+          <button class="btn btn--quiet" id="pickFileBtn">Elegir .inf</button>
+          <button class="btn btn--quiet" id="pickFolderBtn">
+            <svg><use href="#i-folder" /></svg>
+            Elegir carpeta
+          </button>
+          <button class="btn btn--quiet" id="deviceManagerBtn">
+            <svg><use href="#i-device" /></svg>
+            Administrador de dispositivos
+          </button>
+        </div>
+        <label class="toggle-row toggle-row--compact">
+          <input type="checkbox" id="installRestore" />
+          <span><strong>Crear punto de restauración antes de instalar</strong></span>
+        </label>
+        <div class="install-log" id="installLog" hidden></div>
+      </div>
+      <footer class="modal__foot">
+        <span class="muted" id="installHint"></span>
+        <button class="btn btn--primary" id="runInstallBtn" disabled>
+          <svg class="btn__icon"><use href="#i-install" /></svg>
+          Instalar paquete
+        </button>
+      </footer>
+    </section>
+
+    <section class="modal download-modal" id="downloadModal" hidden role="dialog" aria-modal="true" aria-labelledby="downloadTitle">
+      <header class="modal__head">
+        <div>
+          <h2 id="downloadTitle">Descargar paquete oficial</h2>
+          <p class="modal__sub" id="downloadSub">Catálogo de Microsoft Update</p>
+        </div>
+        <button class="btn btn--icon" id="downloadClose" aria-label="Cerrar descargas">
+          <svg><use href="#i-close" /></svg>
+        </button>
+      </header>
+      <div class="modal__body" id="downloadBody"></div>
+      <footer class="modal__foot">
+        <span class="muted" id="downloadHint"></span>
+        <button class="btn btn--primary" id="downloadPrimary" disabled>Descargar</button>
+      </footer>
+    </section>
+
+    <section class="modal hardware-modal" id="hardwareModal" hidden role="dialog" aria-modal="true" aria-labelledby="hardwareTitle">
+      <header class="modal__head">
+        <div>
+          <h2 id="hardwareTitle">Componentes detectados</h2>
+          <p class="modal__sub" id="hardwareSub">Inventario leído del sistema</p>
+        </div>
+        <button class="btn btn--icon" id="hardwareClose" aria-label="Cerrar componentes">
+          <svg><use href="#i-close" /></svg>
+        </button>
+      </header>
+      <div class="modal__body" id="hardwareBody"></div>
+      <footer class="modal__foot">
+        <span class="muted">Solo lectura · sin telemetría</span>
+        <button class="btn btn--primary" id="hardwareDone">Cerrar</button>
+      </footer>
+    </section>
+
+    <section class="modal batch-modal" id="batchModal" hidden role="dialog" aria-modal="true" aria-labelledby="batchTitle">
+      <header class="modal__head">
+        <div>
+          <h2 id="batchTitle">Actualizar todo</h2>
+          <p class="modal__sub" id="batchSub">Descarga de los paquetes oficiales de Microsoft</p>
+        </div>
+        <button class="btn btn--icon" id="batchClose" aria-label="Cerrar actualización">
+          <svg><use href="#i-close" /></svg>
+        </button>
+      </header>
+      <div class="modal__body" id="batchBody"></div>
+      <footer class="modal__foot">
+        <span class="muted" id="batchHint"></span>
+        <button class="btn btn--primary" id="batchPrimary">Cerrar</button>
+      </footer>
+    </section>
+
+    <section class="modal logs-modal" id="logsModal" hidden role="dialog" aria-modal="true" aria-labelledby="logsTitle">
+      <header class="modal__head">
+        <div>
+          <h2 id="logsTitle">Registro de actividad</h2>
+          <p class="modal__sub" id="logsSub">Escaneos, descargas e instalaciones</p>
+        </div>
+        <button class="btn btn--icon" id="logsClose" aria-label="Cerrar registro">
+          <svg><use href="#i-close" /></svg>
+        </button>
+      </header>
+      <div class="modal__body">
+        <div class="logs-filters">
+          <button class="chip is-active" data-log-level="all">Todo</button>
+          <button class="chip" data-log-level="warn">Avisos</button>
+          <button class="chip" data-log-level="error">Errores</button>
+          <span class="logs-counts" id="logsCounts"></span>
+        </div>
+        <div class="logs-list" id="logsList"></div>
+      </div>
+      <footer class="modal__foot">
+        <div class="modal__foot-actions">
+          <button class="btn btn--quiet btn--small" id="logsFolder">Carpeta</button>
+          <button class="btn btn--quiet btn--small" id="logsClear">Vaciar</button>
+        </div>
+        <div class="modal__foot-actions">
+          <button class="btn btn--quiet btn--small" id="logsExportTxt">Exportar TXT</button>
+          <button class="btn btn--quiet btn--small" id="logsExportJson">JSON</button>
+          <button class="btn btn--primary btn--small" id="logsRefresh">Actualizar</button>
+        </div>
+      </footer>
+    </section>
+
+    <section class="modal update-modal" id="updateModal" hidden role="dialog" aria-modal="true" aria-labelledby="updateTitle">
+      <header class="modal__head">
+        <div>
+          <h2 id="updateTitle">Actualización disponible</h2>
+          <p class="modal__sub" id="updateSub">Snap Drivers Pro</p>
+        </div>
+        <button class="btn btn--icon" id="updateClose" aria-label="Cerrar actualización">
+          <svg><use href="#i-close" /></svg>
+        </button>
+      </header>
+      <div class="modal__body" id="updateBody"></div>
+      <footer class="modal__foot">
+        <span class="muted" id="updateHint"></span>
+        <div class="modal__foot-actions">
+          <button class="btn btn--quiet" id="updateLater">Más tarde</button>
+          <button class="btn btn--primary" id="updatePrimary">Instalar actualización</button>
+        </div>
+      </footer>
+    </section>
+
+    <div class="toasts" id="toasts" aria-live="polite"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

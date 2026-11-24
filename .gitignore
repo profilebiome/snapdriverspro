@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.tmptest/
+.scan.json
+.scan.err
+*.log
+.dev/
+.thinkrail/
+dist*/

@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "updatedAt": null,
+  "note": "Catálogo de referencia de Drivers Update Pro. Cada entrada define una familia de componentes y la última versión conocida. Sin 'latestVersion' la app no compara versiones: solo avisa por antigüedad o por Windows Update. Añade la versión que veas en la web oficial del fabricante para activar la comparación.",
+  "entries": [
+    {
+      "id": "intel-graphics",
+      "vendor": "Intel",
+      "deviceClass": "DISPLAY",
+      "matchPattern": "intel.*(graphics|iris|arc)",
+      "latestVersion": null,
+      "lastReviewed": null,
+      "sourceUrl": "https://www.intel.com/content/www/us/en/download-center/home.html",
+      "notes": "Gráficos integrados Intel. Versión de referencia: la del paquete más reciente del Centro de descargas de Intel para tu generación."
+    },
+    {
+      "id": "nvidia-graphics",
+      "vendor": "NVIDIA",
+      "deviceClass": "DISPLAY",
+      "matchPattern": "nvidia|geforce|quadro|rtx",
+      "latestVersion": null,
+      "lastReviewed": null,
+      "sourceUrl": "https://www.nvidia.com/Download/index.aspx",
+      "notes": "Controlador Game Ready o Studio. Usa el buscador oficial de NVIDIA con tu modelo exacto."
+    },
+    {
+      "id": "amd-graphics",
+      "vendor": "AMD",
+      "deviceClass": "DISPLAY",
+      "matchPattern": "amd|radeon",
+      "latestVersion": null,
+      "lastReviewed": null,
+      "sourceUrl": "https://www.amd.com/es/support",
+      "notes": "Adrenalin para Radeon o controlador de chipset AMD."
+    },
+    {
+      "id": "intel-wifi",
+      "vendor": "Intel",
+      "deviceClass": "NET",
+      "matchPattern": "intel.*(wireless|wi-fi|wifi)",
+      "latestVersion": null,
+      "lastReviewed": null,
+      "sourceUrl": "https://www.intel.com/content/www/us/en/download-center/home.html",
+      "notes": "Paquete Wi-Fi de Intel. Windows Update suele ofrecer una versión anterior a la del fabricante."
+    },
+    {
+      "id": "intel-bluetooth",
+      "vendor": "Intel",
+      "deviceClass": "BLUETOOTH",
+      "matchPattern": "intel.*bluetooth",
+      "latestVersion": null,
+      "lastReviewed": null,
+      "sourceUrl": "https://www.intel.com/content/www/us/en/download-center/home.html",
+      "notes": "Bluetooth Intel: instala siempre la misma generación que el paquete Wi-Fi."
+    },
+    {
+      "id": "realtek-audio",
+      "vendor": "Realtek",
+      "deviceClass": "MEDIA",
+      "matchPattern": "realtek.*(audio|high definition)",
+      "latestVersion": null,
+      "lastReviewed": null,
+      "sourceUrl": "https://www.realtek.com/en/downloads",
+      "notes": "Audio Realtek. En portátiles conviene usar el paquete del fabricante del equipo (OEM) antes que el genérico."
+    },
+    {
+      "id": "realtek-network",
+      "vendor": "Realtek",
+      "deviceClass": "NET",
+      "matchPattern": "realtek.*(ethernet|gbe|family controller)",
+      "latestVersion": null,
+      "lastReviewed": null,
+      "sourceUrl": "https://www.realtek.com/en/downloads",
+      "notes": "Ethernet Realtek PCIe GbE."
+    },
+    {
+      "id": "qualcomm-wifi",
+      "vendor": "Qualcomm",
+      "deviceClass": "NET",
+      "matchPattern": "qualcomm|atheros|killer",
+      "latestVersion": null,
+      "lastReviewed": null,
+      "sourceUrl": "https://www.qualcomm.com/support",
+      "notes": "Wi-Fi Qualcomm/Atheros/Killer. En equipos Killer, usa también la web del OEM."
+    }
+  ]
+}

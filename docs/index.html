@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Snap Drivers Pro — Tus drivers al día, desde las fuentes oficiales</title>
+    <meta
+      name="description"
+      content="Snap Drivers Pro escanea los controladores de tu PC, detecta actualizaciones y las descarga desde el catálogo oficial de Microsoft. Un solo permiso, sin telemetría."
+    />
+    <meta property="og:title" content="Snap Drivers Pro" />
+    <meta property="og:description" content="Escanea, actualiza y audita los drivers de cualquier PC con descargas oficiales." />
+    <meta property="og:image" content="resultados.png" />
+    <link rel="stylesheet" href="site.css" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d141d'/%3E%3Cpath d='M16 8v11m0-11-4.2 4.2M16 8l4.2 4.2M9.5 23.5h13' stroke='%232ee6c8' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <header class="nav">
+      <a class="brand" href="#top">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><rect x="1.5" y="1.5" width="29" height="29" rx="8" class="plate" /><path d="M16 8.5v11m0-11-4.2 4.2M16 8.5l4.2 4.2M9.5 23.5h13" class="arrow" /></svg>
+        </span>
+        <span>Snap Drivers <em>Pro</em></span>
+      </a>
+      <nav class="nav__links">
+        <a href="#funciones">Funciones</a>
+        <a href="#como">Cómo funciona</a>
+        <a href="#descargar">Descargar</a>
+        <a href="https://github.com/profilebiome/snapdriverspro" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+      <a class="btn btn--small" href="#descargar">Descargar</a>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero__text">
+          <span class="pill">Windows 10 y 11 · x64 · portable e instalable</span>
+          <h1>Tus drivers al día.<br /><span>Desde las fuentes oficiales.</span></h1>
+          <p>
+            Snap Drivers Pro escanea todos los controladores de tu PC, te dice cuáles necesitan actualización y
+            descarga el paquete que Microsoft publica para ese hardware exacto. Un solo permiso para instalar todo.
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" id="downloadTop" href="https://github.com/profilebiome/snapdriverspro/releases/latest/download/Snap-Drivers-Pro-Setup.exe">
+              Descargar gratis
+            </a>
+            <a class="btn btn--ghost" href="https://github.com/profilebiome/snapdriverspro" target="_blank" rel="noopener">
+              Ver el código
+            </a>
+          </div>
+          <p class="meta" id="downloadMeta">Versión 2.0.0 · ~116 MB · sin telemetría</p>
+        </div>
+        <figure class="hero__shot">
+          <img src="resultados.png" alt="Interfaz de Snap Drivers Pro con la lista de controladores y su estado" loading="eager" />
+        </figure>
+      </section>
+
+      <section class="strip" aria-label="Resumen">
+        <div><b>100+</b><span>fabricantes de componente</span></div>
+        <div><b>29</b><span>fabricantes de equipo</span></div>
+        <div><b>1</b><span>permiso para instalar todo</span></div>
+        <div><b>0</b><span>telemetría</span></div>
+      </section>
+
+      <section id="funciones" class="section">
+        <h2>Lo que hace, sin adornos</h2>
+        <div class="cards">
+          <article>
+            <h3>Escaneo completo del equipo</h3>
+            <p>Controladores, versiones, fechas, firma, INF, hardware IDs y estado PnP. También detecta dispositivos con error aunque no tengan controlador.</p>
+          </article>
+          <article>
+            <h3>Actualizaciones reales</h3>
+            <p>Consulta Windows Update para tu equipo y cruza el resultado con un catálogo local editable. Nunca inventa un «al día».</p>
+          </article>
+          <article>
+            <h3>Descarga desde Microsoft</h3>
+            <p>Del hardware ID al CAB firmado que Microsoft publica en su catálogo, con progreso y sin espejos de terceros.</p>
+          </article>
+          <article>
+            <h3>Un solo permiso</h3>
+            <p>Descarga y extrae toda la cola y aplica los paquetes con una única confirmación. Sin ventanas de consola.</p>
+          </article>
+          <article>
+            <h3>Rutas oficiales por fabricante</h3>
+            <p>Chipset, audio y touchpad → fabricante del equipo. GPU, red y Bluetooth → fabricante del chip. Con marca, modelo y número de serie.</p>
+          </article>
+          <article>
+            <h3>Registro y auditoría</h3>
+            <p>Cada escaneo, descarga e instalación con su código de resultado, exportable a TXT o JSON.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="como" class="section section--steps">
+        <h2>De cero a drivers actualizados en tres pasos</h2>
+        <ol>
+          <li><b>Escanear.</b> La app lee los controladores y consulta Windows Update. Nada se modifica.</li>
+          <li><b>Actualizar todo.</b> Descarga los paquetes oficiales y los prepara en tu carpeta.</li>
+          <li><b>Instalar.</b> Un permiso de Windows y todos los paquetes se aplican; después reinicias si hace falta.</li>
+        </ol>
+        <img src="actualizar-todo.png" alt="Cola de actualización con un solo permiso" loading="lazy" />
+      </section>
+
+      <section class="section">
+        <h2>Para cualquier PC, del más antiguo al gaming de 2026</h2>
+        <p class="lead">
+          Portátiles y torres de cualquier marca, incluidos chipsets, Wi-Fi, audio, almacenamiento y periféricos.
+          Si un dispositivo no está en la tabla, siempre queda la búsqueda por hardware ID en el catálogo oficial.
+        </p>
+        <ul class="chips" aria-label="Fabricantes compatibles">
+          <li>Intel</li><li>AMD</li><li>NVIDIA</li><li>Realtek</li><li>Qualcomm</li><li>MediaTek</li><li>Broadcom</li>
+          <li>Synaptics</li><li>ELAN</li><li>ASMedia</li><li>Samsung</li><li>SK hynix</li><li>Kioxia</li>
+          <li>Lenovo</li><li>Dell</li><li>Alienware</li><li>HP</li><li>OMEN</li><li>ASUS</li><li>ROG</li><li>Acer</li>
+          <li>Predator</li><li>MSI</li><li>Razer</li><li>Gigabyte</li><li>Framework</li><li>XMG</li>
+        </ul>
+      </section>
+
+      <section id="descargar" class="download">
+        <div>
+          <h2>Descárgalo y pruébalo</h2>
+          <p>Instalador firmado por ti mismo, sin tiendas ni instaladores de terceros. También hay versión portable.</p>
+          <p class="meta">Windows 10 22H2 / Windows 11 · x64 · requiere administrador solo para instalar controladores.</p>
+        </div>
+        <div class="download__actions">
+          <a class="btn btn--primary btn--large" href="https://github.com/profilebiome/snapdriverspro/releases/latest/download/Snap-Drivers-Pro-Setup.exe">
+            Descargar Snap Drivers Pro
+          </a>
+          <span class="meta" id="downloadMeta2">Versión 2.0.0</span>
+        </div>
+      </section>
+
+      <section class="section faq">
+        <h2>Preguntas frecuentes</h2>
+        <details>
+          <summary>¿De dónde salen los controladores?</summary>
+          <p>De Windows Update y del Catálogo de Microsoft Update, con la URL del paquete que Microsoft devuelve para tu hardware ID. Nada de espejos ni repositorios de terceros.</p>
+        </details>
+        <details>
+          <summary>¿Envía mis datos a algún sitio?</summary>
+          <p>No. La app no tiene servidor propio ni telemetría: todo se guarda en su carpeta junto al ejecutable (<code>settings.json</code>, <code>instalados.json</code>, <code>Registros/</code>).</p>
+        </details>
+        <details>
+          <summary>¿Por qué pide permiso de administrador?</summary>
+          <p>Instalar un controlador requiere escribir en el almacén de Windows. Se eleva solo esa operación, una vez por lote, y el resto del análisis es de solo lectura.</p>
+        </details>
+        <details>
+          <summary>¿Se actualiza sola?</summary>
+          <p>Sí. Al arrancar comprueba las releases de este repositorio; si hay una versión nueva te avisa y la instala con un clic.</p>
+        </details>
+        <details>
+          <summary>¿Windows SmartScreen muestra un aviso?</summary>
+          <p>El ejecutable no está firmado con un certificado comercial, así que la primera vez puede pedir confirmación. Pulsa «Más información → Ejecutar de todas formas».</p>
+        </details>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div>
+        <span class="footer__brand">Snap Drivers Pro</span>
+        <p>Hecho para mantener cualquier PC al día sin depender de tiendas de drivers.</p>
+      </div>
+      <nav>
+        <a href="https://github.com/profilebiome/snapdriverspro" target="_blank" rel="noopener">Repositorio</a>
+        <a href="https://github.com/profilebiome/snapdriverspro/releases" target="_blank" rel="noopener">Versiones</a>
+        <a href="https://github.com/profilebiome/snapdriverspro/issues" target="_blank" rel="noopener">Soporte</a>
+      </nav>
+      <p class="footer__legal">Sin afiliación con Microsoft, Intel, NVIDIA, AMD ni con los fabricantes mencionados.</p>
+    </footer>
+
+    <script>
+      (function () {
+        var url = 'https://api.github.com/repos/profilebiome/snapdriverspro/releases/latest';
+        fetch(url, { headers: { Accept: 'application/vnd.github+json' } })
+          .then(function (response) { return response.ok ? response.json() : null; })
+          .then(function (release) {
+            if (!release || !release.tag_name) return;
+            var version = String(release.tag_name).replace(/^v/, '');
+            var size = '';
+            var asset = (release.assets || []).filter(function (item) { return /Setup.*\.exe$/i.test(item.name); })[0];
+            if (asset && asset.size) size = ' · ~' + Math.round(asset.size / (1024 * 1024)) + ' MB';
+            var text = 'Versión ' + version + size + ' · sin telemetría';
+            var a = document.getElementById('downloadMeta');
+            var b = document.getElementById('downloadMeta2');
+            if (a) a.textContent = text;
+            if (b) b.textContent = 'Versión ' + version;
+          })
+          .catch(function () {});
+      })();
+    </script>
+  </body>
+</html>

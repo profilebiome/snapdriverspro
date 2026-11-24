@@ -1,0 +1,83 @@
+{
+  "name": "snap-drivers-pro",
+  "productName": "Snap Drivers Pro",
+  "version": "2.0.0",
+  "description": "Auditor y actualizador portable de controladores de Windows con descargas oficiales",
+  "main": "src/main/main.js",
+  "author": {
+    "name": "ProfileBiome",
+    "url": "https://github.com/profilebiome"
+  },
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/",
+    "icon": "node scripts/make-icon.js",
+    "dist": "electron-builder --win nsis --x64",
+    "dist:portable": "electron-builder --win portable --x64",
+    "release": "electron-builder --win nsis --x64 --publish always",
+    "screenshot": "electron . --screenshot"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.11"
+  },
+  "devDependencies": {
+    "electron": "^45.4.1",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "com.profilebiome.snapdriverspro",
+    "productName": "Snap Drivers Pro",
+    "copyright": "ProfileBiome",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "data/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "src/main/scripts/**"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "Snap-Drivers-Pro-Setup.${ext}"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": false,
+      "deleteAppDataOnUninstall": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Snap Drivers Pro",
+      "artifactName": "Snap-Drivers-Pro-Setup.${ext}"
+    },
+    "portable": {
+      "artifactName": "Snap-Drivers-Pro-Portable-${version}.${ext}",
+      "requestExecutionLevel": "user",
+      "unpackDirName": "SnapDriversPro"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "profilebiome",
+        "repo": "snapdriverspro",
+        "releaseType": "release"
+      }
+    ],
+    "compression": "normal"
+  }
+}
