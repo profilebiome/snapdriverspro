@@ -3,299 +3,496 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Snap Drivers Pro — Descarga el actualizador de drivers</title>
+    <title>Snap Drivers Pro — Auditoría y actualización de controladores</title>
     <meta
       name="description"
-      content="Descarga Snap Drivers Pro: escanea los controladores de tu PC, detecta actualizaciones de Windows Update y descarga el paquete oficial con un solo permiso."
+      content="Snap Drivers Pro audita los controladores del equipo, contrasta su estado con Windows Update y descarga el paquete firmado que Microsoft publica para tu hardware."
     />
-    <meta property="og:title" content="Snap Drivers Pro" />
-    <meta property="og:description" content="Escanea, descarga e instala los drivers de cualquier PC desde las fuentes oficiales." />
-    <meta property="og:image" content="shots/results.png" />
+    <meta name="theme-color" content="#05070a" />
+    <meta property="og:type" content="website" />
     <meta property="og:url" content="https://snapdrivers.profilebio.me/" />
-    <meta name="theme-color" content="#080b10" />
+    <meta property="og:title" content="Snap Drivers Pro — Auditoría y actualización de controladores" />
+    <meta
+      property="og:description"
+      content="Audita los controladores del equipo, contrasta su estado con Windows Update y descarga los paquetes firmados por Microsoft para tu hardware exacto."
+    />
+    <meta property="og:image" content="shots/results.png" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="icon-192.png" />
     <link rel="stylesheet" href="site.css" />
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d141d'/%3E%3Cpath d='M16 8v11m0-11-4.2 4.2M16 8l4.2 4.2M9.5 23.5h13' stroke='%232ee6c8' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b1016'/%3E%3Cpath d='M16 8v11m0-11-4.2 4.2M16 8l4.2 4.2M9.5 23.5h13' stroke='%232ee6c8' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
     />
   </head>
   <body>
-    <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-    <div class="glow glow--top" aria-hidden="true"></div>
-    <div class="grain" aria-hidden="true"></div>
+    <div class="progress" id="progress" aria-hidden="true"></div>
+    <div class="backdrop" aria-hidden="true">
+      <span class="blob blob--a"></span>
+      <span class="blob blob--b"></span>
+      <span class="blob blob--c"></span>
+      <span class="grid"></span>
+      <span class="grain"></span>
+    </div>
 
-    <header class="nav">
-      <a class="brand" href="#top">
-        <span class="brand__mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32">
-            <rect x="1.5" y="1.5" width="29" height="29" rx="8" class="plate" />
-            <path d="M16 8.5v11m0-11-4.2 4.2M16 8.5l4.2 4.2M9.5 23.5h13" class="arrow" />
-          </svg>
-        </span>
-        <span>Snap Drivers <em>Pro</em></span>
-      </a>
-      <a class="btn btn--nav" href="#descargar">Descargar</a>
+    <header class="nav" id="nav">
+      <div class="nav__inner">
+        <a class="brand" href="#top">
+          <span class="brand__mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32">
+              <rect x="1.5" y="1.5" width="29" height="29" rx="8.5" class="plate" />
+              <path d="M16 8.5v11m0-11-4.2 4.2M16 8.5l4.2 4.2M9.5 23.5h13" class="arrow" />
+            </svg>
+          </span>
+          <span class="brand__name">Snap Drivers <em>Pro</em></span>
+        </a>
+
+        <nav class="nav__links" aria-label="Secciones">
+          <a href="#funciones">Funciones</a>
+          <a href="#capturas">Capturas</a>
+          <a href="#metodo">Método</a>
+          <a href="#preguntas">Preguntas</a>
+        </nav>
+
+        <a class="btn btn--ghost btn--sm" href="#descargar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 19h14" /></svg>
+          <span>Descargar</span>
+        </a>
+      </div>
     </header>
 
     <main id="top">
-      <!-- DESCARGA PRIMERO -->
-      <section class="download reveal" id="descargar">
-        <div class="download__copy">
-          <span class="eyebrow">Descárgalo y pruébalo</span>
-          <h1>Empieza en menos de un minuto</h1>
-          <p>
-            Instalador por usuario, sin permisos de administrador para escanear y con un solo permiso de
-            Windows al instalar los drivers.
+      <!-- ══ HERO ═══════════════════════════════════════ -->
+      <section class="hero">
+        <div class="hero__copy">
+          <p class="tag">
+            <span class="tag__dot" aria-hidden="true"></span>
+            Windows 10 y 11 · x64 · versión <span id="tagVersion">2.5.3</span>
           </p>
-          <ul class="checklist">
-            <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7"></path></svg></span>Escaneo y auditoría sin tocar el sistema</li>
-            <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7"></path></svg></span>Descargas desde el catálogo oficial de Microsoft</li>
-            <li><span class="tick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7"></path></svg></span>Datos, catálogo y registro en tu propia carpeta</li>
+
+          <h1>
+            Controladores al día,<br />
+            con <span class="grad">procedencia verificable</span>.
+          </h1>
+
+          <p class="lead">
+            Snap Drivers Pro audita cada controlador del equipo, contrasta su estado con Windows Update y
+            descarga el paquete firmado que Microsoft publica para tu hardware exacto. Sin catálogos de
+            terceros y sin telemetría.
+          </p>
+
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#descargar">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 20h16" /></svg>
+              <span>Descargar para Windows</span>
+            </a>
+            <a class="btn btn--quiet" href="#funciones">
+              <span>Ver capacidades</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13m0 0-5-5m5 5-5 5" /></svg>
+            </a>
+          </div>
+
+          <ul class="facts">
+            <li><b id="factSize">116 MB</b><span>Instalador</span></li>
+            <li><b>1</b><span>Permiso de Windows</span></li>
+            <li><b>0</b><span>Paquetes de terceros</span></li>
           </ul>
         </div>
 
-        <aside class="card">
-          <div class="card__top">
-            <span class="card__chip">Windows 10 · 11</span>
-            <span class="card__chip card__chip--muted">x64</span>
-            <span class="card__version"><span>v</span><strong id="cardVersion">2.5.3</strong></span>
+        <div class="stage" id="stage">
+          <span class="stage__aura" aria-hidden="true"></span>
+
+          <figure class="panel" id="panel">
+            <div class="panel__bar" aria-hidden="true">
+              <i></i><i></i><i></i>
+              <span>Auditoría de controladores</span>
+            </div>
+            <div class="panel__screen">
+              <img
+                src="shots/results.png"
+                width="1366"
+                height="728"
+                alt="Interfaz de Snap Drivers Pro con el inventario de controladores del equipo"
+              />
+            </div>
+            <span class="panel__sheen" aria-hidden="true"></span>
+          </figure>
+
+          <div class="stage__reflection" aria-hidden="true">
+            <img src="shots/results.png" alt="" />
           </div>
-          <dl class="card__specs">
-            <div><dt>Instalador</dt><dd id="cardSize">116 MB</dd></div>
-            <div><dt>Idioma</dt><dd>Español</dd></div>
-            <div><dt>Permisos</dt><dd>Un permiso de Windows</dd></div>
-          </dl>
+
+          <div class="stage__chips">
+            <span class="chip chip--a">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 19 6v6c0 4.4-3 7.3-7 8.5-4-1.2-7-4.1-7-8.5V6Z" /><path d="m9 12 2 2 4-4" /></svg>
+              Firma verificada
+            </span>
+            <span class="chip chip--b">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10" /></svg>
+              Catálogo Microsoft
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ DOCK DE DESCARGA ═══════════════════════════ -->
+      <section class="dock reveal" id="descargar">
+        <div class="dock__top">
+          <div class="dock__title">
+            <span class="dock__badge">Versión estable</span>
+            <h2>Instalador para Windows</h2>
+            <p>Instalación por usuario; la auditoría no requiere permisos elevados.</p>
+          </div>
+
           <a
-            class="btn btn--primary btn--download"
-            id="ctaDownload"
+            class="btn btn--primary"
             href="https://github.com/profilebiome/snapdriverspro/releases/latest/download/Snap-Drivers-Pro-Setup.exe"
           >
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 20h16" /></svg>
-            Descargar Snap Drivers Pro
+            <span>Descargar Snap Drivers Pro</span>
           </a>
-        </aside>
+        </div>
+
+        <dl class="dock__specs">
+          <div>
+            <dt>Versión</dt>
+            <dd>v<strong id="dockVersion">2.5.3</strong></dd>
+          </div>
+          <div>
+            <dt>Instalador</dt>
+            <dd id="dockSize">116 MB</dd>
+          </div>
+          <div>
+            <dt>Plataforma</dt>
+            <dd>Windows 10 / 11 · x64</dd>
+          </div>
+          <div>
+            <dt>Idioma</dt>
+            <dd>Español</dd>
+          </div>
+          <div>
+            <dt>Permisos</dt>
+            <dd>Una elevación por lote</dd>
+          </div>
+        </dl>
       </section>
 
-      <!-- HERO -->
-      <section class="hero reveal">
-        <div class="hero__copy">
-          <h2>Los drivers de tu PC, <span class="grad">al día y desde la fuente oficial</span></h2>
-          <p class="hero__lead">
-            Escanea todos los controladores, detecta lo que Windows Update ofrece de verdad y descarga el paquete
-            firmado que Microsoft publica para tu hardware exacto. Todo, con un único permiso.
-          </p>
-        </div>
-        <div class="hero__visual">
-          <div class="window">
-            <div class="window__glow" aria-hidden="true"></div>
-            <img src="shots/results.png" width="1366" height="728" alt="Snap Drivers Pro mostrando la auditoría de controladores" data-parallax="0.06" />
+      <!-- ══ COMPATIBILIDAD ═════════════════════════════ -->
+      <section class="marquee reveal" aria-label="Fabricantes compatibles">
+        <p class="marquee__label">Compatible con hardware de</p>
+        <div class="marquee__track">
+          <div class="marquee__row">
+            <span class="tile"><img src="logos/intel.svg" alt="Intel" loading="lazy" /></span>
+            <span class="tile"><img src="logos/amd.svg" alt="AMD" loading="lazy" /></span>
+            <span class="tile"><img src="logos/nvidia.svg" alt="NVIDIA" loading="lazy" /></span>
+            <span class="tile"><img src="logos/qualcomm.svg" alt="Qualcomm" loading="lazy" /></span>
+            <span class="tile"><img src="logos/mediatek.svg" alt="MediaTek" loading="lazy" /></span>
+            <span class="tile"><img src="logos/broadcom.svg" alt="Broadcom" loading="lazy" /></span>
+            <span class="tile"><img src="logos/lenovo.svg" alt="Lenovo" loading="lazy" /></span>
+            <span class="tile"><img src="logos/dell.svg" alt="Dell" loading="lazy" /></span>
+            <span class="tile"><img src="logos/hp.svg" alt="HP" loading="lazy" /></span>
+            <span class="tile"><img src="logos/asus.svg" alt="ASUS" loading="lazy" /></span>
+            <span class="tile"><img src="logos/acer.svg" alt="Acer" loading="lazy" /></span>
+            <span class="tile"><img src="logos/msi.svg" alt="MSI" loading="lazy" /></span>
+            <span class="tile"><img src="logos/razer.svg" alt="Razer" loading="lazy" /></span>
+            <span class="tile"><img src="logos/samsung.svg" alt="Samsung" loading="lazy" /></span>
+            <span class="tile"><img src="logos/framework.svg" alt="Framework" loading="lazy" /></span>
+            <span class="tile"><img src="logos/corsair.svg" alt="Corsair" loading="lazy" /></span>
+            <span class="tile"><img src="logos/hyperx.svg" alt="HyperX" loading="lazy" /></span>
+          </div>
+          <div class="marquee__row" aria-hidden="true">
+            <span class="tile"><img src="logos/intel.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/amd.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/nvidia.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/qualcomm.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/mediatek.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/broadcom.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/lenovo.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/dell.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/hp.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/asus.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/acer.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/msi.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/razer.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/samsung.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/framework.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/corsair.svg" alt="" loading="lazy" /></span>
+            <span class="tile"><img src="logos/hyperx.svg" alt="" loading="lazy" /></span>
           </div>
         </div>
       </section>
 
-      <!-- LOGOS -->
-      <section class="logos reveal" aria-label="Fabricantes compatibles">
-        <p class="logos__label">Compatible con equipos y componentes de</p>
-        <div class="logos__grid">
-          <span class="logos__tile"><img src="logos/intel.svg" alt="Intel" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/amd.svg" alt="AMD" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/nvidia.svg" alt="NVIDIA" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/qualcomm.svg" alt="Qualcomm" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/mediatek.svg" alt="MediaTek" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/broadcom.svg" alt="Broadcom" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/lenovo.svg" alt="Lenovo" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/dell.svg" alt="Dell" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/hp.svg" alt="HP" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/asus.svg" alt="ASUS" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/acer.svg" alt="Acer" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/msi.svg" alt="MSI" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/razer.svg" alt="Razer" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/samsung.svg" alt="Samsung" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/framework.svg" alt="Framework" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/corsair.svg" alt="Corsair" loading="lazy" /></span>
-          <span class="logos__tile"><img src="logos/hyperx.svg" alt="HyperX" loading="lazy" /></span>
-        </div>
-      </section>
-
-      <!-- FUNCIONES -->
+      <!-- ══ CAPACIDADES ════════════════════════════════ -->
       <section class="section reveal" id="funciones">
-        <span class="eyebrow">Qué hace</span>
-        <h2>Un actualizador honesto, no una tienda de drivers</h2>
-        <p class="lead">
-          Sin catálogos inventados ni paquetes de terceros: lo que instala viene de Microsoft o del fabricante que
-          corresponde, y siempre te dice de dónde salió.
-        </p>
+        <header class="section__head">
+          <p class="eyebrow">Capacidades</p>
+          <h2>Un actualizador técnico, no una tienda de controladores</h2>
+          <p class="lead">
+            Cada paquete que se instala proviene de Microsoft o del fabricante que corresponde, y la
+            aplicación indica siempre su origen. El resto es trazabilidad.
+          </p>
+        </header>
 
-        <div class="features">
-          <article class="feature">
-            <span class="feature__icon">
+        <div class="cards">
+          <article class="card">
+            <span class="card__icon">
               <svg viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2" /><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4" /></svg>
             </span>
-            <h3>Escaneo completo</h3>
-            <p>Controladores, versión, fecha, firma, INF, hardware IDs y estado PnP, además de dispositivos con error.</p>
+            <h3>Auditoría del sistema</h3>
+            <p>Inventario completo: versión, fecha, firma digital, INF, identificadores de hardware y estado PnP, incluidos los dispositivos con error.</p>
           </article>
-          <article class="feature">
-            <span class="feature__icon">
+
+          <article class="card">
+            <span class="card__icon">
               <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 18h14" /></svg>
             </span>
-            <h3>Descarga oficial</h3>
-            <p>Del hardware ID al CAB firmado del Catálogo de Microsoft, con progreso y sin espejos.</p>
+            <h3>Descarga desde el catálogo oficial</h3>
+            <p>Del identificador de hardware al paquete CAB firmado por Microsoft, con progreso verificable y sin espejos intermedios.</p>
           </article>
-          <article class="feature">
-            <span class="feature__icon">
+
+          <article class="card">
+            <span class="card__icon">
               <svg viewBox="0 0 24 24"><path d="M12 3.5 19 6v6c0 4.4-3 7.3-7 8.5-4-1.2-7-4.1-7-8.5V6Z" /><path d="m9 12 2 2 4-4" /></svg>
             </span>
-            <h3>Un solo permiso</h3>
-            <p>Descarga y prepara toda la cola y aplica los paquetes con una única confirmación de Windows.</p>
+            <h3>Una sola elevación</h3>
+            <p>La cola se prepara por completo y se aplica con una única confirmación de Windows, en lugar de un aviso por controlador.</p>
           </article>
-          <article class="feature">
-            <span class="feature__icon">
+
+          <article class="card">
+            <span class="card__icon">
               <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="12" rx="2" /><path d="M9 20h6M12 16v4" /></svg>
             </span>
-            <h3>Rutas por fabricante</h3>
-            <p>Chipset, audio y touchpad van al fabricante del equipo; GPU, red y Bluetooth al del chip.</p>
+            <h3>Enrutamiento por fabricante</h3>
+            <p>Chipset, audio y touchpad se resuelven con el fabricante del equipo; GPU, red y Bluetooth, con el del componente.</p>
           </article>
-          <article class="feature">
-            <span class="feature__icon">
+
+          <article class="card">
+            <span class="card__icon">
               <svg viewBox="0 0 24 24"><path d="M6 4h8l4 4v12H6Z" /><path d="M14 4v4h4M9 13h6M9 16h6" /></svg>
             </span>
-            <h3>Registro auditable</h3>
-            <p>Cada escaneo, descarga e instalación con su código de resultado, exportable a TXT o JSON.</p>
+            <h3>Registro trazable</h3>
+            <p>Cada escaneo, descarga e instalación queda documentado con su código de resultado y es exportable a TXT o JSON.</p>
           </article>
-          <article class="feature">
-            <span class="feature__icon">
+
+          <article class="card">
+            <span class="card__icon">
               <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5" /></svg>
             </span>
-            <h3>Se actualiza sola</h3>
-            <p>Comprueba GitHub al arrancar y te avisa con la nota de la versión nueva. Un clic y listo.</p>
+            <h3>Actualización automática</h3>
+            <p>Al iniciar se consultan las versiones publicadas en el repositorio y se notifican las novedades con la nota de la release.</p>
           </article>
         </div>
       </section>
 
-      <!-- GALERÍA -->
-      <section class="section section--shots reveal" id="capturas">
-        <span class="eyebrow">Así se ve</span>
-        <h2>Todo en una ventana</h2>
+      <!-- ══ CAPTURAS ═══════════════════════════════════ -->
+      <section class="section reveal" id="capturas">
+        <header class="section__head">
+          <p class="eyebrow">Capturas</p>
+          <h2>Toda la operación en una sola ventana</h2>
+        </header>
 
-        <div class="shot-grid">
-          <figure class="shot">
-            <div class="window">
-              
-              <img src="shots/download.png" alt="Paquetes oficiales del catálogo de Microsoft" loading="lazy" />
+        <div class="mosaic">
+          <figure class="shot shot--wide">
+            <div class="panel panel--sm">
+              <div class="panel__bar" aria-hidden="true"><i></i><i></i><i></i><span>Descargas oficiales</span></div>
+              <div class="panel__screen"><img src="shots/download.png" width="1366" height="728" alt="Paquetes oficiales del catálogo de Microsoft" loading="lazy" /></div>
+              <span class="panel__sheen" aria-hidden="true"></span>
             </div>
+            <figcaption>
+              <b>Paquetes oficiales</b>
+              <span>Cada entrada muestra origen, tamaño y firma antes de descargarse.</span>
+            </figcaption>
           </figure>
+
           <figure class="shot">
-            <div class="window">
-              
-              <img src="shots/batch.png" alt="Cola de actualización con un solo permiso" loading="lazy" />
+            <div class="panel panel--sm">
+              <div class="panel__bar" aria-hidden="true"><i></i><i></i><i></i><span>Cola de instalación</span></div>
+              <div class="panel__screen"><img src="shots/batch.png" width="1366" height="728" alt="Cola de actualización con un solo permiso" loading="lazy" /></div>
+              <span class="panel__sheen" aria-hidden="true"></span>
             </div>
+            <figcaption>
+              <b>Aplicación por lote</b>
+              <span>Una confirmación de Windows para toda la cola preparada.</span>
+            </figcaption>
           </figure>
+
           <figure class="shot">
-            <div class="window">
-              
-              <img src="shots/logs.png" alt="Registro de actividad" loading="lazy" />
+            <div class="panel panel--sm">
+              <div class="panel__bar" aria-hidden="true"><i></i><i></i><i></i><span>Registro</span></div>
+              <div class="panel__screen"><img src="shots/logs.png" width="1366" height="728" alt="Registro de actividad exportable" loading="lazy" /></div>
+              <span class="panel__sheen" aria-hidden="true"></span>
             </div>
+            <figcaption>
+              <b>Historial exportable</b>
+              <span>Resultado por operación, disponible en TXT o JSON.</span>
+            </figcaption>
           </figure>
         </div>
       </section>
 
-      <!-- CÓMO FUNCIONA -->
-      <section class="section section--steps reveal">
-        <span class="eyebrow">Cómo funciona</span>
-        <h2>Tres pasos y reiniciar si hace falta</h2>
+      <!-- ══ MÉTODO ═════════════════════════════════════ -->
+      <section class="section reveal" id="metodo">
+        <header class="section__head">
+          <p class="eyebrow">Método</p>
+          <h2>Tres etapas, con reinicio solo si el paquete lo exige</h2>
+        </header>
+
         <ol class="steps">
-          <li>
-            <b>Escanea</b>
-            <span>Lee los controladores y consulta Windows Update. Nada se modifica.</span>
+          <li class="step">
+            <span class="step__num">01</span>
+            <h3>Analizar</h3>
+            <p>Se leen los controladores y se consulta Windows Update. La operación es de solo lectura: nada se modifica.</p>
           </li>
-          <li>
-            <b>Descarga</b>
-            <span>Prepara los paquetes oficiales en tu carpeta, con progreso y sin bloquear la ventana.</span>
+          <li class="step">
+            <span class="step__num">02</span>
+            <h3>Descargar</h3>
+            <p>Los paquetes oficiales se guardan en la carpeta local con progreso en segundo plano y sin bloquear la interfaz.</p>
           </li>
-          <li>
-            <b>Instala</b>
-            <span>Un permiso de Windows aplica todo; si algún paquete lo pide, reinicias y vuelves a escanear.</span>
+          <li class="step">
+            <span class="step__num">03</span>
+            <h3>Aplicar</h3>
+            <p>Una confirmación de Windows instala el lote completo. Si un paquete requiere reinicio, se reanuda con un nuevo análisis.</p>
           </li>
         </ol>
       </section>
 
-      <!-- FAQ -->
-      <section class="section faq reveal" id="preguntas">
-        <span class="eyebrow">Preguntas</span>
-        <h2>Lo que suele preguntarse</h2>
-        <div class="faq__grid">
+      <!-- ══ PREGUNTAS ══════════════════════════════════ -->
+      <section class="section reveal" id="preguntas">
+        <header class="section__head">
+          <p class="eyebrow">Preguntas frecuentes</p>
+          <h2>Dudas habituales antes de instalar</h2>
+        </header>
+
+        <div class="faq">
           <details>
-            <summary>¿De dónde salen los controladores?</summary>
-            <p>De Windows Update y del Catálogo de Microsoft Update, con la URL que Microsoft devuelve para tu hardware ID. Nada de espejos ni repositorios de terceros.</p>
+            <summary>¿Cuál es el origen de los controladores?</summary>
+            <p>Windows Update y el Catálogo de Microsoft Update, con la URL que Microsoft devuelve para tu identificador de hardware. No se usan espejos ni repositorios de terceros.</p>
           </details>
           <details>
-            <summary>¿Envía mis datos a algún sitio?</summary>
-            <p>No. Todo se guarda en la carpeta de la aplicación: ajustes, catálogo, instalaciones y registro.</p>
+            <summary>¿Se envía información a algún servidor?</summary>
+            <p>No. Ajustes, catálogo, instalaciones y registro permanecen en la carpeta local de la aplicación.</p>
           </details>
           <details>
-            <summary>¿Por qué pide permiso de administrador?</summary>
-            <p>Instalar un controlador requiere escribir en el almacén de Windows. Se eleva solo esa operación, una vez por lote; el análisis es de solo lectura.</p>
+            <summary>¿Por qué solicita permisos de administrador?</summary>
+            <p>Instalar un controlador implica escribir en el almacén de Windows. Se eleva únicamente esa operación, una vez por lote; el análisis es de solo lectura.</p>
           </details>
           <details>
-            <summary>¿Se actualiza sola?</summary>
-            <p>Sí. Al arrancar comprueba las releases del repositorio y, si hay una nueva, te avisa con la nota de la versión y un botón para instalarla.</p>
+            <summary>¿La aplicación se actualiza por sí misma?</summary>
+            <p>Sí. Al arrancar consulta las versiones publicadas del repositorio y, si existe una nueva, la presenta con su nota de cambios y la opción de instalarla.</p>
           </details>
           <details>
-            <summary>¿Habrá aviso de SmartScreen?</summary>
-            <p>Puede pasar la primera vez: el ejecutable no está firmado con un certificado comercial. Pulsa «Más información → Ejecutar de todas formas».</p>
+            <summary>¿Aparecerá un aviso de SmartScreen?</summary>
+            <p>Puede ocurrir la primera vez, ya que el ejecutable no está firmado con un certificado comercial: «Más información → Ejecutar de todas formas».</p>
           </details>
           <details>
-            <summary>¿Funciona en un portátil gaming?</summary>
-            <p>Sí. En clases del sistema manda el fabricante del equipo (Legion, ROG, Predator, OMEN, Alienware, MSI…); en GPU y red, el fabricante del chip.</p>
+            <summary>¿Funciona en equipos portátiles de alto rendimiento?</summary>
+            <p>Sí. En las clases del sistema prevalece el fabricante del equipo (Legion, ROG, Predator, OMEN, Alienware, MSI…); en GPU y red, el del chip.</p>
           </details>
         </div>
       </section>
 
-      <section class="closing reveal">
-        <p>¿Listo para tener los drivers al día?</p>
-        <a class="btn btn--primary btn--download" href="https://github.com/profilebiome/snapdriverspro/releases/latest/download/Snap-Drivers-Pro-Setup.exe">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M4 20h16" /></svg>
-          Descargar Snap Drivers Pro
-        </a>
-      </section>
     </main>
+
+    <footer class="foot">
+      <div class="foot__brand">
+        <span class="brand__mark brand__mark--sm" aria-hidden="true">
+          <svg viewBox="0 0 32 32">
+            <rect x="1.5" y="1.5" width="29" height="29" rx="8.5" class="plate" />
+            <path d="M16 8.5v11m0-11-4.2 4.2M16 8.5l4.2 4.2M9.5 23.5h13" class="arrow" />
+          </svg>
+        </span>
+        <div>
+          <p class="foot__name">Snap Drivers <em>Pro</em></p>
+          <p class="foot__meta">Auditoría y actualización de controladores · v<span id="footVersion">2.5.3</span></p>
+        </div>
+      </div>
+    </footer>
 
     <script>
       document.documentElement.classList.remove('no-js');
 
       (function () {
         var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var fine = window.matchMedia('(pointer: fine)').matches;
 
-        var bar = document.getElementById('scrollProgress');
-        function paintBar() {
+        /* progreso de lectura */
+        var bar = document.getElementById('progress');
+        function paint() {
           var doc = document.documentElement;
           var max = doc.scrollHeight - doc.clientHeight;
-          bar.style.width = max > 0 ? ((doc.scrollTop / max) * 100).toFixed(2) + '%' : '0%';
+          bar.style.transform = 'scaleX(' + (max > 0 ? doc.scrollTop / max : 0) + ')';
         }
-        document.addEventListener('scroll', paintBar, { passive: true });
-        paintBar();
+        document.addEventListener('scroll', paint, { passive: true });
+        paint();
 
-        var parallax = document.querySelector('[data-parallax]');
-        if (parallax && !reduce) {
-          var frame = 0;
-          var move = function () {
-            frame = 0;
-            var offset = Math.min(window.scrollY, 700) * parseFloat(parallax.dataset.parallax || '0');
-            parallax.style.transform = 'translate3d(0, ' + offset + 'px, 0) scale(1.015)';
-          };
-          document.addEventListener(
-            'scroll',
-            function () {
-              if (!frame) frame = requestAnimationFrame(move);
+        /* barra superior condensada */
+        var nav = document.getElementById('nav');
+        function paintNav() {
+          nav.classList.toggle('is-stuck', window.scrollY > 24);
+        }
+        document.addEventListener('scroll', paintNav, { passive: true });
+        paintNav();
+
+        /* aparición progresiva */
+        var items = document.querySelectorAll('.reveal');
+        if ('IntersectionObserver' in window && !reduce) {
+          var io = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add('in');
+                  io.unobserve(entry.target);
+                }
+              });
             },
-            { passive: true },
+            { rootMargin: '0px 0px -12% 0px', threshold: 0.08 },
           );
-          move();
+          items.forEach(function (item) { io.observe(item); });
+        } else {
+          items.forEach(function (item) { item.classList.add('in'); });
         }
 
-        document.querySelectorAll('.feature').forEach(function (card) {
+        /* inclinación espacial del panel principal */
+        var stage = document.getElementById('stage');
+        var panel = document.getElementById('panel');
+        if (stage && panel && fine && !reduce && window.innerWidth >= 900) {
+          var raf = 0;
+          var target = { x: 0, y: 0 };
+          var current = { x: 0, y: 0 };
+
+          var loop = function () {
+            current.x += (target.x - current.x) * 0.12;
+            current.y += (target.y - current.y) * 0.12;
+            panel.style.transform =
+              'rotateX(' + current.y.toFixed(2) + 'deg) rotateY(' + current.x.toFixed(2) + 'deg)';
+            if (Math.abs(target.x - current.x) > 0.01 || Math.abs(target.y - current.y) > 0.01) {
+              raf = requestAnimationFrame(loop);
+            } else {
+              raf = 0;
+            }
+          };
+
+          stage.addEventListener('pointermove', function (event) {
+            var rect = stage.getBoundingClientRect();
+            var px = (event.clientX - rect.left) / rect.width - 0.5;
+            var py = (event.clientY - rect.top) / rect.height - 0.5;
+            target.x = px * 11;
+            target.y = -py * 8;
+            panel.style.transition = 'none';
+            if (!raf) raf = requestAnimationFrame(loop);
+          });
+
+          stage.addEventListener('pointerleave', function () {
+            target.x = 0;
+            target.y = 0;
+            panel.style.transition = 'transform .8s cubic-bezier(.2,.8,.2,1)';
+            if (!raf) raf = requestAnimationFrame(loop);
+          });
+        }
+
+        /* foco de luz que sigue al puntero */
+        document.querySelectorAll('.card').forEach(function (card) {
           card.addEventListener('pointermove', function (event) {
             var rect = card.getBoundingClientRect();
             card.style.setProperty('--mx', ((event.clientX - rect.left) / rect.width) * 100 + '%');
@@ -304,12 +501,11 @@
         });
       })();
 
+      /* versión y tamaño reales de la última release */
       (function () {
         var RELEASE = 'https://api.github.com/repos/profilebiome/snapdriverspro/releases/latest';
         fetch(RELEASE, { headers: { Accept: 'application/vnd.github+json' } })
-          .then(function (response) {
-            return response.ok ? response.json() : null;
-          })
+          .then(function (response) { return response.ok ? response.json() : null; })
           .then(function (release) {
             if (!release || !release.tag_name) return;
             var version = String(release.tag_name).replace(/^v/, '');
@@ -318,11 +514,16 @@
             })[0];
             var size = asset && asset.size ? Math.round(asset.size / (1024 * 1024)) + ' MB' : null;
 
-            var card = document.getElementById('cardVersion');
-            if (card) card.textContent = version;
+            ['dockVersion', 'tagVersion', 'footVersion'].forEach(function (id) {
+              var node = document.getElementById(id);
+              if (node) node.textContent = version;
+            });
+
             if (size) {
-              var sizeNode = document.getElementById('cardSize');
-              if (sizeNode) sizeNode.textContent = size;
+              ['dockSize', 'factSize'].forEach(function (id) {
+                var node = document.getElementById(id);
+                if (node) node.textContent = size;
+              });
             }
           })
           .catch(function () {});

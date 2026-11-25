@@ -1,14 +1,14 @@
 {
   "name": "Snap Drivers Pro",
   "short_name": "Snap Drivers",
-  "description": "Escanea los controladores de tu PC, detecta actualizaciones oficiales y las instala con un solo permiso.",
+  "description": "Audita los controladores del equipo, contrasta su estado con Windows Update y descarga los paquetes firmados por el fabricante.",
   "lang": "es",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#070a0f",
-  "theme_color": "#0b1220",
+  "background_color": "#05070a",
+  "theme_color": "#05070a",
   "categories": ["utilities", "productivity"],
   "icons": [
     {

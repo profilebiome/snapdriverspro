@@ -3,7 +3,7 @@
  * funcionando sin conexión para la estructura y los logos.
  */
 
-const CACHE = 'snap-drivers-pro-v1';
+const CACHE = 'snap-drivers-pro-v2';
 const SHELL = ['./', 'index.html', 'site.css', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', (event) => {
