@@ -11,6 +11,7 @@ const installedStore = require('./installed');
 const { classifyPnputil } = require('./pnputil');
 const logger = require('./logger');
 const scan = require('./scan');
+const notApplicable = require('./not-applicable');
 
 /** Paths the user explicitly approved through a native dialog during this session. */
 const approved = new Set();
@@ -223,6 +224,21 @@ async function installBatch(targets, { restorePoint = false, onProgress = null }
       const currentVersion = currentVersions.get(item.path) || '';
       const applied = Boolean(currentVersion) && Boolean(previous) && currentVersion !== previous;
       const needsReboot = Boolean(item.ok) && Boolean(currentVersion) && Boolean(previous) && !applied;
+      if (item.ok && currentVersion && previous && !applied) {
+        const target = items.find((entry) => entry.path === item.path);
+        notApplicable.record({
+          label: item.label,
+          hardwareIds: target?.hardwareIds || [],
+          currentVersion,
+        });
+        logger.warn('install', `${item.label}: el paquete se instaló pero el dispositivo sigue en ${currentVersion}`, {
+          path: item.path,
+        });
+      }
+      if (item.ok && applied) {
+        const target = items.find((entry) => entry.path === item.path);
+        notApplicable.remove(target?.hardwareIds || []);
+      }
       return {
         ...item,
         currentVersion,

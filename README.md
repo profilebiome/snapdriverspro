@@ -205,6 +205,18 @@ export CSC_KEY_PASSWORD=tu-contraseña
 npm run dist
 ```
 
+## Cuando Windows no acepta el paquete
+
+Hay controladores que entran en el almacén (pnputil devuelve 0) pero **Windows nunca enlaza al dispositivo**:
+el caso típico son gráficos antiguos donde el paquete del catálogo no corresponde a esta máquina. Windows Update
+seguirá ofreciéndolo, así que la app lo registra en `no-aplica.json` y:
+
+- La fila pasa a **Al día · no aplicable** con el motivo («sigue en la versión X; usa el instalador del
+  fabricante») y **deja de pedirlo**.
+- El detalle muestra un aviso, cambia el botón principal a **Web del fabricante** y ofrece **Reintentar**
+  (olvida el intento para probar otra vez).
+- Si algún día la versión instalada cambia, el registro deja de aplicar y el aviso vuelve.
+
 ## Instalado de verdad vs. pendiente de reinicio
 
 Tras aplicar un paquete, la app **vuelve a leer la versión real del dispositivo**:

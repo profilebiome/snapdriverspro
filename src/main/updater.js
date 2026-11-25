@@ -36,6 +36,10 @@ function init({ getWindow }) {
   autoUpdater.autoInstallOnAppQuit = true;
   autoUpdater.allowDowngrade = false;
   autoUpdater.disableWebInstaller = true;
+  // La descarga diferencial fallaba con "sha512 checksum mismatch" en cada
+  // release y acababa descargando el instalador completo igualmente: se
+  // desactiva para que el resultado sea siempre el mismo.
+  autoUpdater.disableDifferentialDownload = true;
 
   // Development only: point the updater at a local latest.yml to exercise the
   // visual flow. Packaged builds always use the configured GitHub provider.

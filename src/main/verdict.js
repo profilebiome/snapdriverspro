@@ -145,6 +145,18 @@ function verdictFor(driver, update, entry, options = {}) {
   const threshold = Number.isFinite(options.ageThresholdMonths) ? options.ageThresholdMonths : 24;
   const now = options.now instanceof Date ? options.now : new Date();
 
+  if (options.notApplicable) {
+    return {
+      level: 'current',
+      source: 'not-applicable',
+      latestVersion: null,
+      updateId: null,
+      reason: `Ya se intentó instalar el paquete y el dispositivo sigue en la versión ${driver.driverVersion} (${formatDate(
+        options.notApplicable.at,
+      )}). Windows seguirá ofreciéndolo, pero no se aplica: usa el instalador del fabricante.`,
+    };
+  }
+
   if (update) {
     const bits = [asString(update.provider), asString(update.model)].filter(Boolean).join(' · ');
     return {

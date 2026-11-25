@@ -606,6 +606,7 @@ function renderDrawer() {
     ['Estado PnP', row.status || (row.errorCode ? `Código ${row.errorCode}` : 'OK')],
   ].filter(([, value]) => value && value !== '—');
 
+  const notApplicable = row.verdict.source === 'not-applicable';
   const routes = Array.isArray(row.links?.routes) && row.links.routes.length ? row.links.routes : legacyRoutes(row.links);
   const routeIcon = { chip: 'cpu', oem: 'device', catalog: 'search', wu: 'shield' };
   const linksHtml = routes
@@ -679,6 +680,7 @@ function renderDrawer() {
 
   $('#drawerBody').innerHTML = `
     <p class="reason" style="--level: var(--c-${row.verdict.level})">${escapeHtml(row.verdict.reason)}</p>
+    ${notApplicable ? '<p class="drawer__notice">Windows seguirá ofreciendo este paquete aunque lo instales: el dispositivo no acepta la versión del catálogo. Descarga el instalador oficial del fabricante para actualizarlo.</p>' : ''}
     ${installedHtml}
     ${updateHtml}
     ${equipmentHtml}
@@ -695,12 +697,17 @@ function renderDrawer() {
 
   const primaryRoute = routes[0] || null;
   const canVerify = row.verdict.level === 'review' || row.verdict.level === 'unknown';
-  const canProbe = row.verdict.source !== 'catalog-package';
-  $('#drawerFoot').innerHTML = `
-    ${canProbe ? `<button class="btn btn--quiet" data-action="probe" data-key="${escapeHtml(row.key)}">${icon('search')} Comprobar versión</button>` : ''}
-    <button class="btn btn--primary" data-action="open-download" data-key="${escapeHtml(row.key)}">
-      ${icon('download')} Descargar e instalar
-    </button>`;
+  const canProbe = row.verdict.source !== 'catalog-package' && !notApplicable;
+  $('#drawerFoot').innerHTML = notApplicable
+    ? `<button class="btn btn--quiet" data-action="open-logs" title="Ver el registro">${icon('file')}</button>
+       <button class="btn btn--quiet" data-action="forget-attempt" data-key="${escapeHtml(row.key)}" title="Olvidar el intento y volver a probar">${icon('refresh')} Reintentar</button>
+       <button class="btn btn--primary" data-action="open-vendor" data-key="${escapeHtml(row.key)}">
+         ${icon('external')} Web del fabricante
+       </button>`
+    : `${canProbe ? `<button class="btn btn--quiet" data-action="probe" data-key="${escapeHtml(row.key)}">${icon('search')} Comprobar versión</button>` : ''}
+       <button class="btn btn--primary" data-action="open-download" data-key="${escapeHtml(row.key)}">
+         ${icon('download')} Descargar e instalar
+       </button>`;
 }
 
 /* ───────────────────────────── settings ───────────────────────────── */
@@ -1377,6 +1384,12 @@ async function loadLogs() {
 function renderLogs() {
   const { entries, counts } = state.logs;
   $('#logsCounts').textContent = `${counts.total || 0} eventos · ${counts.warn || 0} avisos · ${counts.error || 0} errores`;
+  const badge = $('#logsCount');
+  if (badge) {
+    const errors = Number(counts.error) || 0;
+    badge.textContent = errors ? String(errors) : '';
+    badge.hidden = errors === 0;
+  }
   const list = $('#logsList');
   if (!entries.length) {
     list.innerHTML = '<p class="dl-status">Sin eventos todavía. Escanea o descarga un paquete para empezar.</p>';
@@ -2017,6 +2030,7 @@ function bindEvents() {
   $('#openFolderBtn').addEventListener('click', () => guard(callApi(api.openReportsFolder)));
   $('#hardwareBtn').addEventListener('click', openHardware);
   $('#logsBtn').addEventListener('click', openLogs);
+  $('#logsToolbarBtn').addEventListener('click', openLogs);
   $('#logsClose').addEventListener('click', () => {
     state.logs.open = false;
     closeModal('#logsModal');
@@ -2094,6 +2108,14 @@ function setLevel(level) {
   renderRows();
 }
 
+async function forgetAttempt(key) {
+  const result = await callApi(api.forgetAttempt, key).catch(() => null);
+  if (!result) return;
+  toast('Intento olvidado. Vuelve a escanear para poder instalarlo otra vez.', 'ok', 6000);
+  closeDrawer();
+  guard(loadLogs());
+}
+
 async function probeVersion(key) {
   const row = state.rows.find((candidate) => candidate.key === key);
   if (!row) return;
@@ -2154,6 +2176,14 @@ function handleRowAction(action, key, route) {
   }
   if (action === 'probe') {
     guard(probeVersion(key));
+    return;
+  }
+  if (action === 'open-logs') {
+    openLogs();
+    return;
+  }
+  if (action === 'forget-attempt') {
+    guard(forgetAttempt(key));
     return;
   }
   const legacy = { 'open-vendor': 'chip', 'open-oem': 'oem', 'open-wu': 'wu', 'open-catalog': 'catalog', catalog: 'catalog' };

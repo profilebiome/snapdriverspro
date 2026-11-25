@@ -76,6 +76,16 @@ test('a driver verified by the user is reported as up to date', () => {
   assert.match(result.reason, /Verificado por ti/);
 });
 
+test('a package that Windows never bound stops asking for the same update', () => {
+  const update = { updateId: 'x', provider: 'Intel Corporation', model: 'Intel(R) HD Graphics', driverDate: '2015-12-21T00:00:00Z' };
+  const result = v.verdictFor(driver(), update, null, {
+    notApplicable: { at: '2026-11-24T00:15:00Z', currentVersion: '10.18.10.4252' },
+  });
+  assert.equal(result.level, 'current');
+  assert.equal(result.source, 'not-applicable');
+  assert.match(result.reason, /sigue en la versión 10.18.10.4252/);
+});
+
 test('a Windows Update match wins over catalog and age', () => {
   const result = v.verdictFor(driver(), { updateId: 'x', provider: 'Intel', model: 'Intel(R) HD Graphics', driverDate: '2024-01-01T00:00:00Z' }, { latestVersion: '99.0.0.0' }, {
     ageThresholdMonths: 24,

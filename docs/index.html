@@ -13,6 +13,8 @@
     <meta property="og:image" content="shots/results.png" />
     <meta property="og:url" content="https://snapdrivers.profilebio.me/" />
     <meta name="theme-color" content="#080b10" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
     <link rel="stylesheet" href="site.css" />
     <link
       rel="icon"
@@ -58,7 +60,7 @@
           <div class="card__top">
             <span class="card__chip">Windows 10 · 11</span>
             <span class="card__chip card__chip--muted">x64</span>
-            <span class="card__version"><span>v</span><strong id="cardVersion">2.4.3</strong></span>
+            <span class="card__version"><span>v</span><strong id="cardVersion">2.5.2</strong></span>
           </div>
           <dl class="card__specs">
             <div><dt>Instalador</dt><dd id="cardSize">116 MB</dd></div>
@@ -325,6 +327,13 @@
           })
           .catch(function () {});
       })();
+    </script>
+    <script>
+      if ('serviceWorker' in navigator && location.protocol === 'https:') {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('sw.js').catch(function () {});
+        });
+      }
     </script>
   </body>
 </html>

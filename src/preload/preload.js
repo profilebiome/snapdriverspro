@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('dup', {
 
   verifyRows: (rowKeys, verified) => call('verdict:verify', { rowKeys, verified }),
   probeVersion: (rowKey) => call('verdict:probe', { rowKey }),
+  forgetAttempt: (rowKey) => call('verdict:forget', { rowKey }),
 
   openLink: (rowKey, which) => call('links:open', { rowKey, which }),
   openLinks: (rowKeys, which) => call('links:openMany', { rowKeys, which }),

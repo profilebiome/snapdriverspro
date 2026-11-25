@@ -17,6 +17,7 @@ const logger = require('./logger');
 const installedStore = require('./installed');
 const verifiedStore = require('./verified');
 const versionProbe = require('./version-probe');
+const notApplicableStore = require('./not-applicable');
 const verdictLib = require('./verdict');
 const elevate = require('./elevate');
 const updater = require('./updater');
@@ -189,6 +190,7 @@ function register({ getWindow }) {
         const installedRecords = installedStore.read().filter((entry) => installedStore.isFresh(entry));
         const verifiedRecords = verifiedStore.read();
         const references = versionProbe.readCache();
+        const notApplicableRecords = notApplicableStore.read();
         const partialRows = scan.buildRows({
           system: systemResult.system,
           drivers: systemResult.drivers,
@@ -199,6 +201,7 @@ function register({ getWindow }) {
           installedRecords,
           verifiedRecords,
           references,
+          notApplicableRecords,
         });
         session.rows = partialRows;
         session.system = systemResult.system;
@@ -232,6 +235,7 @@ function register({ getWindow }) {
           installedRecords,
           verifiedRecords,
           references,
+          notApplicableRecords,
         });
         const stats = scan.summarize(rows, {
           updatesAvailable: updateResult.available,
@@ -280,6 +284,14 @@ function register({ getWindow }) {
     session.scanning = false;
     powershell.killAll();
     return { cancelled: true };
+  });
+
+  handle('verdict:forget', async (_event, { rowKey } = {}) => {
+    const row = rowsByKey(rowKey)[0];
+    if (!row) throw new Error('Ese controlador ya no está en la lista.');
+    notApplicableStore.remove(row.hardwareIds || []);
+    logger.info('install', `Se olvidó el intento fallido de ${row.deviceName}`);
+    return { forgotten: true };
   });
 
   handle('verdict:probe', async (_event, { rowKey } = {}) => {

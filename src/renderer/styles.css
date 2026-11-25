@@ -109,8 +109,11 @@ code {
   align-items: center;
   gap: 10px;
   padding-left: 14px;
-  background: var(--bg-elev);
-  border-bottom: 1px solid var(--line-soft);
+  background:
+    linear-gradient(180deg, rgba(59, 130, 246, 0.16), rgba(59, 130, 246, 0.04) 60%, transparent),
+    linear-gradient(180deg, #0f1a29, #0b121d);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.35);
+  box-shadow: inset 0 -1px 0 rgba(59, 130, 246, 0.12);
   user-select: none;
 }
 
@@ -192,7 +195,7 @@ code {
   width: 46px;
   display: grid;
   place-items: center;
-  color: var(--muted);
+  color: #9dc0ff;
   transition: background 120ms ease, color 120ms ease;
 }
 
@@ -203,12 +206,12 @@ code {
 }
 
 .winbtn:hover {
-  background: var(--surface-3);
-  color: var(--text);
+  background: rgba(59, 130, 246, 0.24);
+  color: #e3eeff;
 }
 
 .winbtn--close:hover {
-  background: #c93a35;
+  background: #e5484d;
   color: #fff;
 }
 
@@ -2527,4 +2530,50 @@ body.is-blank .empty__art {
 
 #settingsBtn {
   position: relative;
+}
+
+/* ───────────────────────── logs access ───────────────────────── */
+
+.btn__count {
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: rgba(255, 122, 107, 0.18);
+  border: 1px solid rgba(255, 122, 107, 0.45);
+  color: var(--c-error);
+  font: 600 10px/14px var(--font);
+  text-align: center;
+}
+
+.drawer__notice {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  border: 1px solid rgba(246, 181, 68, 0.35);
+  background: rgba(246, 181, 68, 0.07);
+  color: #f2d6a4;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* barra de título: indicador inferior azul integrado */
+.titlebar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.65), transparent);
+  pointer-events: none;
+}
+
+.titlebar {
+  position: relative;
+}
+
+.mark__plate {
+  fill: #12233a;
+  stroke: rgba(59, 130, 246, 0.45);
 }
