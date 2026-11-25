@@ -809,6 +809,23 @@ async function cancelScan() {
 
 function onScanEvent(event) {
   if (!event || !event.type) return;
+  if (event.type === 'install-progress') {
+    state.installProgress = Array.isArray(event.entries) ? event.entries : [];
+    if (state.batch.open && state.batch.phase === 'installing') {
+      state.batch.done = state.installProgress.length;
+      state.batch.total = state.batch.items.filter((item) => item.status !== 'error').length;
+      if (state.installProgress.length > 0) {
+        state.batch.current = state.installProgress[state.installProgress.length - 1].label;
+      }
+      renderBatch();
+    }
+    const dl = state.download;
+    if (dl.open && dl.phase === 'working' && state.installProgress.length > 0) {
+      dl.message = `Instalando: ${state.installProgress[state.installProgress.length - 1].label}…`;
+      renderDownload();
+    }
+    return;
+  }
   if (event.type === 'phase') {
     state.phase = event.phase;
     renderScanState();
@@ -1114,15 +1131,44 @@ async function installDownloaded() {
   dl.message = 'Instalando con permisos de administrador…';
   renderDownload();
   const row = state.rows.find((item) => item.key === dl.rowKey);
-  const singleTargets = [{ path: extracted.dir, label: row?.deviceName || 'Paquete', hardwareIds: row?.hardwareIds || [] }];
-  const result = await callApi(api.installBatch, singleTargets, state.settings.createRestorePoint).catch(() => null);
-  if (result && result.needsElevation) {
-    await callApi(api.savePending, { items: singleTargets, autoInstall: true }).catch(() => null);
-    toast('Reiniciando la app como administrador para instalar…', 'warn', 6000);
-    await callApi(api.relaunchElevated).catch(() => null);
+  const singleTargets = [
+    {
+      path: extracted.dir,
+      label: row?.deviceName || 'Paquete',
+      hardwareIds: row?.hardwareIds || [],
+      previousVersion: row?.driverVersion || '',
+    },
+  ];
+  const result = await withInstallWatchdog(
+    callApi(api.installBatch, singleTargets, state.settings.createRestorePoint),
+  ).catch((error) => ({ error }));
+  if (result?.error) {
+    dl.phase = 'error';
+    dl.message = result.error.message;
+    renderDownload();
     return;
   }
   const single = result?.results?.[0] || null;
+  if (row && single && single.ok) {
+    row.verdict = {
+      level: 'current',
+      source: single.needsReboot ? 'pending-reboot' : 'install',
+      latestVersion: null,
+      updateId: null,
+      reason: single.needsReboot
+        ? `Paquete instalado; Windows aplicará la versión nueva al reiniciar (ahora: ${single.currentVersion || row.driverVersion}).`
+        : 'Instalado por Snap Drivers Pro.',
+    };
+    renderAll();
+  }
+  if (row && single && single.needsReboot) {
+    dl.phase = 'done';
+    dl.message = 'Instalado · reinicia para aplicarlo';
+    renderDownload();
+    toast('Paquete instalado. Reinicia el equipo para aplicar la versión nueva.', 'warn', 9000);
+    guard(loadLogs());
+    return;
+  }
   if (result && single && (single.status === 'reboot' || single.status === 'no-device')) {
     dl.phase = 'done';
     renderDownload();
@@ -1361,29 +1407,15 @@ function openLogs() {
 /* ───────────────────────────── batch update ───────────────────────────── */
 
 async function resumePendingInstall() {
+  // Versiones anteriores guardaban aquí una instalación pendiente y reiniciaban
+  // la app. Ahora la elevación ocurre en el momento, así que cualquier resto se
+  // descarta y se registra.
   const pending = await callApi(api.takePending).catch(() => null);
-  if (!pending || !Array.isArray(pending.items) || pending.items.length === 0) return;
-  state.batch = {
-    open: true,
-    phase: 'ready',
-    jobs: new Map(),
-    installed: 0,
-    failed: 0,
-    items: pending.items.map((item) => ({
-      rowKey: '',
-      label: item.label || 'Paquete',
-      vendor: '',
-      status: 'ready',
-      message: 'Extraído · listo para instalar',
-      percent: 100,
-      dir: item.path,
-      hardwareIds: item.hardwareIds || [],
-    })),
-  };
-  $('#batchSub').textContent = `${state.batch.items.length} paquete(s) pendientes · instalación silenciosa`;
-  renderBatch();
-  openModal('#batchModal');
-  if (pending.autoInstall && state.admin) guard(installBatch());
+  if (!pending) return;
+  const count = Array.isArray(pending.items) ? pending.items.length : 0;
+  if (count > 0) {
+    toast('Se descartó una instalación pendiente de una versión anterior. Vuelve a pulsar «Descargar e instalar».', 'warn', 7000);
+  }
 }
 
 const BATCH_LIMIT = 10;
@@ -1426,6 +1458,7 @@ function openBatch() {
       percent: 0,
       dir: null,
       hardwareIds: row.hardwareIds || [],
+      driverVersion: row.driverVersion || '',
     })),
   };
   $('#batchSub').textContent = `${rows.length} dispositivo${rows.length === 1 ? '' : 's'} · un solo permiso de administrador al final`;
@@ -1490,18 +1523,48 @@ async function runBatchDownloads() {
   renderBatch();
 }
 
+const INSTALL_WATCHDOG_MS = 9 * 60 * 1000;
+
+function withInstallWatchdog(promise) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(
+      () => reject(new Error('La instalación superó los 9 minutos. Abre el Registro para ver el último paso.')),
+      INSTALL_WATCHDOG_MS,
+    );
+    Promise.resolve(promise).then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
+
 async function installBatch() {
   const batch = state.batch;
   const ready = batch.items.filter((item) => item.status === 'ready');
   if (ready.length === 0) return;
   batch.phase = 'installing';
   renderBatch();
-  const targets = ready.map((item) => ({ path: item.dir, label: item.label, hardwareIds: item.hardwareIds }));
-  const result = await callApi(api.installBatch, targets, state.settings.createRestorePoint).catch(() => null);
-  if (result && result.needsElevation) {
-    await callApi(api.savePending, { items: targets, autoInstall: true }).catch(() => null);
-    toast('Reiniciando la app como administrador para instalar sin ventanas de consola…', 'warn', 6000);
-    await callApi(api.relaunchElevated).catch(() => null);
+  const targets = ready.map((item) => ({
+    path: item.dir,
+    label: item.label,
+    hardwareIds: item.hardwareIds,
+    previousVersion: item.driverVersion || '',
+  }));
+  const result = await withInstallWatchdog(
+    callApi(api.installBatch, targets, state.settings.createRestorePoint),
+  ).catch((error) => ({ error }));
+  if (result?.error) {
+    batch.phase = 'done';
+    batch.failed += ready.length;
+    batch.error = result.error.message;
+    renderBatch();
+    toast(result.error.message, 'bad', 9000);
     return;
   }
   if (!result) {
@@ -1516,7 +1579,13 @@ async function installBatch() {
     if (!entry) return;
     const outcome = entry.status || (entry.ok ? 'ok' : 'error');
     item.status =
-      outcome === 'ok' ? 'installed' : outcome === 'reboot' ? 'reboot' : outcome === 'no-device' ? 'no-device' : 'error';
+      entry.needsReboot || outcome === 'reboot'
+        ? 'reboot'
+        : outcome === 'ok'
+          ? 'installed'
+          : outcome === 'no-device'
+            ? 'no-device'
+            : 'error';
     if (item.status !== 'error') {
       const row = state.rows.find((candidate) => candidate.key === item.rowKey);
       if (row) {
@@ -1525,8 +1594,11 @@ async function installBatch() {
           source: 'install',
           latestVersion: null,
           updateId: null,
+          source: entry.needsReboot ? 'pending-reboot' : 'install',
           reason:
-            item.status === 'reboot'
+            entry.needsReboot
+              ? `Paquete instalado; Windows aplicará la versión nueva al reiniciar (ahora: ${entry.currentVersion || item.driverVersion}).`
+              : item.status === 'reboot'
               ? 'Instalado por Snap Drivers Pro; reinicia el equipo para completarlo.'
               : item.status === 'no-device'
                 ? 'Paquete añadido al almacén por Snap Drivers Pro; Windows lo asociará al reiniciar.'
@@ -1536,6 +1608,8 @@ async function installBatch() {
     }
     if (outcome === 'ok') {
       item.message = `Instalado · ${entry.added} paquete(s) · ${entry.infs} .inf aplicable(s)`;
+    } else if (entry.needsReboot) {
+      item.message = `Instalado · reinicia para aplicarlo (sigue en ${entry.currentVersion || 'la versión anterior'})`;
     } else if (outcome === 'reboot') {
       item.message = 'Instalado · reinicia para completarlo';
     } else if (outcome === 'no-device') {
@@ -1609,14 +1683,20 @@ function renderBatch() {
     return;
   }
   if (batch.phase === 'installing') {
-    primary.textContent = 'Instalando…';
+    const done = Number(batch.done) || 0;
+    const total = Number(batch.total) || ready.length;
+    primary.textContent = total ? `Instalando ${Math.min(done + 1, total)}/${total}…` : 'Instalando…';
     primary.disabled = true;
-    hint.textContent = 'No cierres la ventana';
+    hint.textContent = batch.current ? `Aplicando: ${batch.current}` : 'Esperando el permiso de Windows…';
     return;
   }
-  primary.textContent = 'Cerrar';
+  primary.textContent = batch.error ? 'Abrir registro' : 'Cerrar';
   primary.disabled = false;
-  hint.textContent = batch.installed || batch.failed ? `${batch.installed} instalado(s) · ${batch.failed} con error` : '';
+  hint.textContent = batch.error
+    ? String(batch.error).slice(0, 120)
+    : batch.installed || batch.failed
+      ? `${batch.installed} instalado(s) · ${batch.failed} con error`
+      : '';
 }
 
 /* ───────────────────────────── install flow ───────────────────────────── */
@@ -1847,7 +1927,13 @@ function bindEvents() {
   $('#batchClose').addEventListener('click', closeBatch);
   $('#batchPrimary').addEventListener('click', () => {
     if (state.batch.phase === 'ready') guard(installBatch());
-    else if (state.batch.phase === 'done') closeBatch();
+    else if (state.batch.phase === 'done') {
+      if (state.batch.error) {
+        openLogs();
+        return;
+      }
+      closeBatch();
+    }
   });
   $('#downloadPrimary').addEventListener('click', () => {
     const phase = state.download.phase;

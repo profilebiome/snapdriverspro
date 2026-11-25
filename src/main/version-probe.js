@@ -16,7 +16,7 @@ const paths = require('./paths');
 const downloads = require('./catalog-download');
 const logger = require('./logger');
 
-const MAX_BYTES = 80 * 1024 * 1024;
+const MAX_BYTES = 300 * 1024 * 1024;
 const TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 function cacheFile() {
@@ -107,7 +107,12 @@ async function probe(row) {
   const best = pickCandidate(search.results);
   if (!best) return { found: false, reason: 'Sin paquetes utilizables.' };
   if (best.sizeBytes && best.sizeBytes > MAX_BYTES) {
-    return { found: false, skipped: true, sizeBytes: best.sizeBytes, reason: 'El paquete supera el límite de comprobación (80 MB).' };
+    return {
+      found: false,
+      skipped: true,
+      sizeBytes: best.sizeBytes,
+      reason: `El paquete supera el límite de comprobación (${Math.round(MAX_BYTES / (1024 * 1024))} MB).`,
+    };
   }
 
   const urls = await downloads.resolveUrls(best.updateId);

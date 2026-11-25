@@ -6,10 +6,11 @@ const path = require('node:path');
 const { execFile } = require('node:child_process');
 const { dialog, shell } = require('electron');
 const paths = require('./paths');
-const { runElevatedSilent } = require('./elevate');
+const { runElevatedAndWait } = require('./elevate');
 const installedStore = require('./installed');
 const { classifyPnputil } = require('./pnputil');
 const logger = require('./logger');
+const scan = require('./scan');
 
 /** Paths the user explicitly approved through a native dialog during this session. */
 const approved = new Set();
@@ -81,7 +82,7 @@ function validateTarget(target) {
 }
 
 async function createRestorePoint() {
-  const result = await runElevatedSilent(paths.script('restore-point.ps1'), [], { timeoutMs: 300_000 });
+  const result = await runElevatedAndWait(paths.script('restore-point.ps1'), [], { timeoutMs: 300_000 });
   return {
     ok: Boolean(result.ok),
     message: result.ok
@@ -103,7 +104,13 @@ async function install(target, { restorePoint = true } = {}) {
     }
   }
 
-  const result = await runElevatedSilent(paths.script('install-inf.ps1'), [resolved], { timeoutMs: 600_000 });
+  let result;
+  try {
+    result = await runElevatedAndWait(paths.script('install-inf.ps1'), [resolved], { timeoutMs: 420_000 });
+  } catch (error) {
+    logger.error('install', `La instalación no pudo empezar: ${error.message}`, { target: resolved });
+    throw error;
+  }
   const output = String(result.output || '').trim();
   const outcome = classifyPnputil(result.exitCode);
   steps.push({ step: 'pnputil', ok: Boolean(result.ok), exitCode: result.exitCode, message: outcome.reason || output });
@@ -130,7 +137,7 @@ async function install(target, { restorePoint = true } = {}) {
 }
 
 /** Installs several extracted packages with a single elevation prompt. */
-async function installBatch(targets, { restorePoint = false } = {}) {
+async function installBatch(targets, { restorePoint = false, onProgress = null } = {}) {
   const items = [];
   for (const target of Array.isArray(targets) ? targets : []) {
     const { resolved, kind } = validateTarget(target.path || target);
@@ -139,6 +146,7 @@ async function installBatch(targets, { restorePoint = false } = {}) {
       path: resolved,
       kind,
       hardwareIds: Array.isArray(target.hardwareIds) ? target.hardwareIds.map(String).slice(0, 12) : [],
+      previousVersion: String(target.previousVersion || ''),
     });
   }
   if (items.length === 0) throw new Error('No hay paquetes para instalar.');
@@ -160,12 +168,66 @@ async function installBatch(targets, { restorePoint = false } = {}) {
     'utf8',
   );
   try {
-    const result = await runElevatedSilent(paths.script('install-batch.ps1'), [manifest], { timeoutMs: 900_000 });
+    const progressFile = path.join(os.tmpdir(), `dup-progress-${Date.now()}.json`);
+    let progressTimer = null;
+    if (typeof onProgress === 'function') {
+      progressTimer = setInterval(() => {
+        try {
+          if (!fs.existsSync(progressFile)) return;
+          const entries = JSON.parse(fs.readFileSync(progressFile, 'utf8').replace(/^﻿/, ''));
+          if (Array.isArray(entries)) onProgress(entries);
+        } catch {
+          /* el archivo se está escribiendo */
+        }
+      }, 700);
+    }
+    let result;
+    try {
+      result = await runElevatedAndWait(paths.script('install-batch.ps1'), [manifest, progressFile], { timeoutMs: 480_000 });
+    } catch (error) {
+      logger.error('install', `La instalación no pudo empezar: ${error.message}`, { packages: items.length });
+      throw error;
+    } finally {
+      if (progressTimer) clearInterval(progressTimer);
+      try {
+        fs.unlinkSync(progressFile);
+      } catch {
+        /* temporal */
+      }
+    }
     const results = Array.isArray(result.results) ? result.results : [];
+
+    // pnputil can report success while the device keeps its previous driver until
+    // a reboot. Re-read the real version so the UI never claims an update that
+    // Windows has not applied yet.
+    let currentVersions = new Map();
+    if (results.some((item) => item.ok)) {
+      try {
+        const scanned = await scan.scanSystem(90_000);
+        for (const item of items) {
+          const match = scanned.drivers.find(
+            (driver) =>
+              Array.isArray(driver.hardwareIds) &&
+              driver.hardwareIds.some((id) => item.hardwareIds.map((x) => x.toLowerCase()).includes(String(id).toLowerCase())),
+          );
+          if (match) currentVersions.set(item.path, match.driverVersion);
+        }
+      } catch (error) {
+        logger.warn('install', `No se pudo comprobar la versión tras instalar: ${error.message}`);
+      }
+    }
+
     const mapped = results.map((item) => {
       const outcome = classifyPnputil(item.exitCode);
+      const previous = items.find((entry) => entry.path === item.path)?.previousVersion || '';
+      const currentVersion = currentVersions.get(item.path) || '';
+      const applied = Boolean(currentVersion) && Boolean(previous) && currentVersion !== previous;
+      const needsReboot = Boolean(item.ok) && Boolean(currentVersion) && Boolean(previous) && !applied;
       return {
         ...item,
+        currentVersion,
+        applied,
+        needsReboot,
         status: item.status || outcome.status,
         reason: outcome.reason,
         rebootRequired: Boolean(item.rebootRequired) || outcome.rebootRequired,

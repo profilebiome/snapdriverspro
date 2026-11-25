@@ -205,6 +205,27 @@ export CSC_KEY_PASSWORD=tu-contraseña
 npm run dist
 ```
 
+## Instalado de verdad vs. pendiente de reinicio
+
+Tras aplicar un paquete, la app **vuelve a leer la versión real del dispositivo**:
+
+- Si cambió → **Instalado** y la fila pasa a «Al día».
+- Si Windows mantiene la anterior hasta reiniciar (habitual en tarjetas gráficas) → **Instalado · reinicia para
+  aplicarlo**, con la versión que sigue activa, y la fila deja de mostrar «Actualizar».
+- Si el paquete no aplica, el siguiente escaneo vuelve a mostrarlo como actualización: la app no finge.
+
+## Cómo se instala (y por qué ya no se queda cargando)
+
+Al pulsar **Descargar e instalar**, la app pide **un único permiso de Windows** y se queda abierta esperando:
+
+- Si aceptas, el paquete se aplica en segundo plano y ves el progreso por paquete («Instalando 2/9 · …»).
+- Si cancelas, aparece «Permiso de administrador cancelado» y puedes reintentar sin perder la descarga.
+- Un vigilante de 9 minutos evita que la ventana se quede cargando para siempre; si salta, el propio aviso
+  enlaza al Registro.
+
+Las versiones anteriores guardaban la cola y reiniciaban la app elevada; si ese reinicio no llegaba a
+completarse, la interfaz se quedaba en «Instalando con permisos de administrador…». Ese camino ya no existe.
+
 ## Si una actualización deja la app sin arrancar
 
 Una actualización interrumpida puede dejar `app.asar` a medio reemplazar. Desde la 2.3.0 la app no muestra el

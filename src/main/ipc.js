@@ -370,15 +370,16 @@ function register({ getWindow }) {
     return installer.pickFolder(win);
   });
 
-  handle('installer:run', async (_event, { target, restorePoint } = {}) => {
-    if (!(await elevate.isElevated())) return { needsElevation: true };
-    return installer.install(target, { restorePoint });
-  });
+  handle('installer:run', async (_event, { target, restorePoint } = {}) =>
+    installer.install(target, { restorePoint }),
+  );
 
-  handle('installer:runBatch', async (_event, { targets, restorePoint } = {}) => {
-    if (!(await elevate.isElevated())) return { needsElevation: true };
-    return installer.installBatch(targets, { restorePoint });
-  });
+  handle('installer:runBatch', async (_event, { targets, restorePoint } = {}) =>
+    installer.installBatch(targets, {
+      restorePoint,
+      onProgress: (entries) => send({ type: 'install-progress', entries }),
+    }),
+  );
 
   handle('app:isElevated', async () => ({ elevated: await elevate.isElevated() }));
 

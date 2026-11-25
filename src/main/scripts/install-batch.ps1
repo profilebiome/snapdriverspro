@@ -1,10 +1,12 @@
 ﻿param(
     [Parameter(Mandatory = $true)][string]$ManifestPath,
+    [string]$ProgressFile = '',
     [Parameter(Mandatory = $true)][string]$OutFile
 )
 
 $ErrorActionPreference = 'Continue'
 $results = @()
+$progress = @()
 
 try {
     $parsed = Get-Content -LiteralPath $ManifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -100,6 +102,10 @@ foreach ($item in $items) {
         $entry.status = 'error'
     }
     $results += [pscustomobject]$entry
+    $progress += [pscustomobject]@{ label = $entry.label; status = $entry.status; ok = [bool]$entry.ok }
+    if ($ProgressFile) {
+        try { $progress | ConvertTo-Json -Depth 3 -Compress | Set-Content -LiteralPath $ProgressFile -Encoding UTF8 } catch { }
+    }
 }
 
 # Asks PnP to bind the packages that were just added to the driver store.

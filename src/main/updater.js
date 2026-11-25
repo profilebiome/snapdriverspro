@@ -35,6 +35,7 @@ function init({ getWindow }) {
   autoUpdater.autoDownload = false;
   autoUpdater.autoInstallOnAppQuit = true;
   autoUpdater.allowDowngrade = false;
+  autoUpdater.disableWebInstaller = true;
 
   // Development only: point the updater at a local latest.yml to exercise the
   // visual flow. Packaged builds always use the configured GitHub provider.
@@ -79,8 +80,15 @@ function init({ getWindow }) {
   );
   autoUpdater.on('update-downloaded', (info) => send({ status: 'downloaded', version: info?.version || '' }));
   autoUpdater.on('error', (error) => {
-    logger.error('update', error?.message || String(error));
-    send({ status: 'error', message: error?.message || String(error) });
+    const message = error?.message || String(error);
+    // A repository without releases is not a failure: it just means no updates.
+    if (/no published versions/i.test(message)) {
+      logger.info('update', 'El repositorio todavía no tiene versiones publicadas');
+      send({ status: 'latest' });
+      return;
+    }
+    logger.error('update', message);
+    send({ status: 'error', message });
   });
 }
 

@@ -1,15 +1,13 @@
 'use strict';
 
 /**
- * Runs a PowerShell script elevated without ever showing a console window.
+ * Runs a PowerShell script with administrator rights and waits for its JSON
+ * result file.
  *
- * - If the app is already elevated: the script runs directly (no UAC, no window).
- * - Otherwise elevation goes through `wscript.exe`, which has no console: a tiny
- *   VBS launches a .cmd (also hidden) that runs PowerShell and redirects its
- *   output. The only thing the user sees is the Windows UAC prompt.
- *
- * Keeping the command inside a .cmd file avoids nested-quote escaping in VBS,
- * which is the part that usually breaks these silent-elevation tricks.
+ * - Already elevated: the script runs directly (no UAC, no window).
+ * - Otherwise: one UAC prompt for a hidden PowerShell that executes the script
+ *   and waits. The app stays alive, so a cancelled prompt is reported instead of
+ *   leaving the interface loading forever.
  */
 
 const { spawn } = require('node:child_process');
@@ -19,11 +17,9 @@ const path = require('node:path');
 
 const SYSTEM32 = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32');
 const PS = path.join(SYSTEM32, 'WindowsPowerShell', 'v1.0', 'powershell.exe');
-const WSCRIPT = path.join(SYSTEM32, 'wscript.exe');
 
 let elevatedCache = null;
 
-/** True when this process runs with administrator rights (cached). */
 function isElevated() {
   if (elevatedCache !== null) return Promise.resolve(elevatedCache);
   return new Promise((resolve) => {
@@ -68,7 +64,7 @@ function runProcess(file, args, { timeoutMs = 600_000 } = {}) {
       } catch {
         /* ignore */
       }
-      finish(reject, new Error('La operación elevada no respondió a tiempo.'));
+      finish(reject, new Error(`La instalación tardó más de ${Math.round(timeoutMs / 60000)} minutos y se canceló.`));
     }, timeoutMs);
     child.stdout.on('data', (chunk) => {
       out += chunk.toString();
@@ -81,30 +77,17 @@ function runProcess(file, args, { timeoutMs = 600_000 } = {}) {
   });
 }
 
-function buildCmdFile(scriptPath, args) {
-  const cmd = [
-    '@echo off',
-    `"${PS}" -NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File "${scriptPath}" ${args
-      .map((value) => `"${value}"`)
-      .join(' ')}`,
-    '',
-  ].join('\r\n');
-  const file = path.join(os.tmpdir(), `dup-run-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.cmd`);
-  fs.writeFileSync(file, cmd, 'utf8');
-  return file;
+function psQuote(value) {
+  return `'${String(value).replace(/'/g, "''")}'`;
 }
 
-function buildVbsFile(cmdPath) {
-  // One quoted argument for `Run`, no nested quoting to get wrong.
-  const file = path.join(os.tmpdir(), `dup-run-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.vbs`);
-  const body = ['Set sh = CreateObject("WScript.Shell")', `sh.Run """${cmdPath}""", 0, True`, ''].join('\r\n');
-  fs.writeFileSync(file, body, 'utf16le');
-  return file;
+function cmdQuote(value) {
+  return `"${String(value).replace(/"/g, '""')}"`;
 }
 
 function readResult(outFile) {
   try {
-    if (!fs.existsSync(outFile)) throw new Error('La operación elevada no devolvió ningún resultado.');
+    if (!fs.existsSync(outFile)) throw new Error('La operación no devolvió ningún resultado.');
     const raw = fs.readFileSync(outFile, 'utf8').replace(/^\uFEFF/, '');
     return JSON.parse(raw);
   } finally {
@@ -116,42 +99,53 @@ function readResult(outFile) {
   }
 }
 
-async function runElevatedSilent(scriptPath, args = [], { timeoutMs = 600_000 } = {}) {
+/**
+ * @param {string} scriptPath
+ * @param {string[]} args  script arguments (the result file is appended)
+ * @param {{ timeoutMs?: number }} options
+ */
+async function runElevatedAndWait(scriptPath, args = [], { timeoutMs = 300_000 } = {}) {
   const outFile = path.join(os.tmpdir(), `dup-out-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.json`);
   const allArgs = [...args, outFile];
+  const elevated = await isElevated();
 
-  if (await isElevated()) {
-    await runProcess(
+  if (elevated) {
+    const result = await runProcess(
       PS,
       ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden', '-File', scriptPath, ...allArgs],
       { timeoutMs },
     );
+    if (result.code !== 0 && !fs.existsSync(outFile)) {
+      throw new Error((result.stderr || '').trim() || `PowerShell terminó con código ${result.code}.`);
+    }
     return readResult(outFile);
   }
 
-  const cmdFile = buildCmdFile(scriptPath, allArgs);
-  const vbsFile = buildVbsFile(cmdFile);
-  try {
-    const launcher = `Start-Process -FilePath '${WSCRIPT}' -ArgumentList '"${vbsFile}"' -Verb RunAs -WindowStyle Hidden -Wait`;
-    const result = await runProcess(
-      PS,
-      ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden', '-Command', launcher],
-      { timeoutMs },
-    );
-    if (result.code !== 0) {
-      const message = (result.stderr || '').trim();
-      throw new Error(message || 'El permiso de administrador fue cancelado.');
-    }
-    return readResult(outFile);
-  } finally {
-    for (const file of [vbsFile, cmdFile]) {
-      try {
-        fs.unlinkSync(file);
-      } catch {
-        /* temporal */
-      }
-    }
+  const inner = ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden', '-File', scriptPath, ...allArgs]
+    .map(cmdQuote)
+    .join(' ');
+  const command = [
+    '$p = Start-Process',
+    '-FilePath', psQuote(PS),
+    '-Verb', 'RunAs',
+    '-WindowStyle', 'Hidden',
+    '-Wait',
+    '-PassThru',
+    '-ArgumentList', psQuote(inner),
+    '; exit $p.ExitCode',
+  ].join(' ');
+
+  const result = await runProcess(
+    PS,
+    ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden', '-Command', command],
+    { timeoutMs },
+  );
+  if (result.code !== 0 && !fs.existsSync(outFile)) {
+    const message = (result.stderr || '').trim();
+    if (/cancel|cancelad|1223|denied|denegad/i.test(message)) throw new Error('Permiso de administrador cancelado.');
+    throw new Error(message || 'Windows no permitió la instalación con permisos de administrador.');
   }
+  return readResult(outFile);
 }
 
-module.exports = { runElevatedSilent, isElevated, SYSTEM32, PS, OPERATOR: undefined };
+module.exports = { runElevatedAndWait, isElevated };
